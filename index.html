@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>База Працівників</title>
   <!-- Підключаємо Tailwind CSS для сучасного дизайну -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <style>
@@ -14,7 +15,7 @@
   <div class="max-w-7xl mx-auto">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-gray-800">Картки обліку працівників</h1>
-      <div id="loading" class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded animate-pulse">
+      <div id="loading" class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded animate-pulse" style="display: none;">
         Завантаження даних...
       </div>
     </div>
@@ -125,6 +126,9 @@
   </div>
 
   <script>
+    // НОВЕ ПОСИЛАННЯ НА GOOGLE APPS SCRIPT
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxsGtukUdGv3jyAxlOQzV-ES3k_Ze5IvkwWGfowYF51ztVjOy4I4mgjDAXdMOvbjno0uQ/exec';
+    
     let allEmployees = [];
     let currentFilter = 'Активні';
 
@@ -136,17 +140,22 @@
       document.getElementById('loading').style.display = show ? 'block' : 'none';
     }
 
-    // Отримання даних з Гугл Таблиці
-    function loadEmployees() {
+    // Завантаження даних з API (Google Таблиці)
+    async function loadEmployees() {
       showLoading(true);
-      google.script.run.withSuccessHandler(function(data) {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
         allEmployees = data;
         renderTable();
-        showLoading(false);
-      }).getEmployees();
+      } catch (error) {
+        console.error('Помилка завантаження:', error);
+        alert('Не вдалося завантажити дані з таблиці. Перевірте консоль для деталей.');
+      }
+      showLoading(false);
     }
 
-    // Відображення таблиці з урахуванням фільтрів та пошуку
+    // Відображення таблиці
     function renderTable() {
       const tbody = document.getElementById('employees-table-body');
       tbody.innerHTML = '';
@@ -154,10 +163,7 @@
       const searchQuery = document.getElementById('search-input').value.toLowerCase();
 
       const filtered = allEmployees.filter(emp => {
-        // Фільтр по табах (Статус)
         if (currentFilter !== 'Всі' && emp.status !== currentFilter) return false;
-        
-        // Фільтр по пошуковому рядку (ПІБ або Відділ)
         const matchesPib = emp.pib.toLowerCase().includes(searchQuery);
         const matchesDept = emp.department.toLowerCase().includes(searchQuery);
         return matchesPib || matchesDept;
@@ -197,7 +203,7 @@
       });
     }
 
-    // Перемикання фільтрів
+    // Перемикання вкладок
     function changeFilter(status) {
       currentFilter = status;
       document.getElementById('tab-all').classList.remove('tab-active');
@@ -211,7 +217,7 @@
       renderTable();
     }
 
-    // Активація поля дати звільнення тільки якщо вибрано "Звільнений"
+    // Блокування/розблокування дати звільнення
     function toggleDismissalDate() {
       const status = document.getElementById('status').value;
       const block = document.getElementById('dismissal-date-block');
@@ -225,7 +231,7 @@
       }
     }
 
-    // Клік на кнопку "Редагувати" -> Перенесення даних у форму
+    // Завантаження даних у форму для редагування
     function editEmployee(id) {
       const emp = allEmployees.find(e => e.id == id);
       if (!emp) return;
@@ -244,7 +250,6 @@
         document.getElementById('dismissalDate').value = emp.dismissalDate;
       }
 
-      // Зміна дизайну форми під режим редагування
       document.getElementById('form-title').innerText = `Редагувати #${emp.id}`;
       document.getElementById('btn-submit').innerText = 'Оновити дані працівника';
       document.getElementById('btn-submit').classList.replace('bg-blue-600', 'bg-yellow-600');
@@ -252,7 +257,7 @@
       document.getElementById('btn-cancel-edit').classList.remove('hidden');
     }
 
-    // Скидання форми до дефолтного стану (режим додавання)
+    // Скидання форми
     function resetForm() {
       document.getElementById('employee-form').reset();
       document.getElementById('emp-id').value = '';
@@ -265,13 +270,13 @@
       toggleDismissalDate();
     }
 
-    // Відправка форми в Google Скрипт
-    function submitForm(e) {
+    // Відправка даних на API
+    async function submitForm(e) {
       e.preventDefault();
       showLoading(true);
       
       const employeeData = {
-        id: document.getElementById('emp-id').value, // якщо порожній, то створиться новий
+        id: document.getElementById('emp-id').value,
         pib: document.getElementById('pib').value,
         department: document.getElementById('department').value,
         position: document.getElementById('position').value,
@@ -282,16 +287,26 @@
         folderUrl: document.getElementById('folderUrl').value
       };
 
-      google.script.run.withSuccessHandler(function(response) {
-        if(response.success) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(employeeData)
+        });
+        
+        const result = await response.json();
+        
+        if(result.success) {
           resetForm();
-          loadEmployees(); // Перезавантажуємо список з таблиці
-          alert('Дані успішно збережено в Google Таблицю!');
+          await loadEmployees(); // Оновлюємо таблицю
+          alert('Дані успішно збережено!');
         } else {
-          alert('Помилка збереження: ' + response.error);
-          showLoading(false);
+          alert('Помилка: ' + result.error);
         }
-      }).saveEmployee(employeeData);
+      } catch (error) {
+        console.error('Помилка відправки:', error);
+        alert('Помилка зв\'язку з базою даних. Перевірте консоль.');
+      }
+      showLoading(false);
     }
   </script>
 </body>
