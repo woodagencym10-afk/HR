@@ -1,716 +1,581 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>База Працівників</title>
-
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-  <style>
-
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-    }
-
-    body{
-
-      background:
-        radial-gradient(circle at top left, rgba(16,185,129,0.05), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(37,99,235,0.06), transparent 35%),
-        #050816;
-
-      color:white;
-
-      overflow-x:hidden;
-
-      position:relative;
-    }
-
-    /* GRID */
-
-    body::before{
-
-      content:'';
-
-      position:fixed;
-
-      inset:0;
-
-      background-image:
-        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-
-      background-size:60px 60px;
-
-      mask-image:
-        radial-gradient(circle at center, black 40%, transparent 100%);
-
-      pointer-events:none;
-
-      z-index:0;
-    }
-
-    /* glow */
-
-    body::after{
-
-      content:'';
-
-      position:fixed;
-
-      width:700px;
-      height:700px;
-
-      background:rgba(16,185,129,0.05);
-
-      filter:blur(120px);
-
-      border-radius:50%;
-
-      top:-300px;
-      left:-300px;
-
-      z-index:0;
-    }
-
-    .main-content{
-      position:relative;
-      z-index:2;
-    }
-
-    /* glass */
-
-    .glass{
-
-      background:rgba(12,18,35,0.72);
-
-      backdrop-filter:blur(18px);
-
-      border:1px solid rgba(255,255,255,0.05);
-
-      box-shadow:
-        0 10px 40px rgba(0,0,0,0.35);
-
-      border-radius:24px;
-    }
-
-    /* nav */
-
-    .nav-btn{
-
-      padding:12px 18px;
-
-      border-radius:14px;
-
-      transition:0.25s;
-
-      color:rgba(255,255,255,0.65);
-
-      font-weight:500;
-    }
-
-    .nav-btn:hover{
-
-      background:rgba(255,255,255,0.04);
-
-      color:white;
-    }
-
-    .nav-active{
-
-      background:
-        linear-gradient(145deg,#0f766e,#2563eb);
-
-      color:white;
-    }
-
-    /* tabs */
-
-    .tab-active{
-
-      color:#34d399;
-
-      border-bottom:2px solid #34d399;
-
-      font-weight:600;
-    }
-
-    /* table */
-
-    table{
-      color:rgba(255,255,255,0.75);
-    }
-
-    thead{
-      background:rgba(255,255,255,0.03);
-    }
-
-    tbody tr{
-      transition:0.2s;
-    }
-
-    tbody tr:hover{
-      background:rgba(255,255,255,0.03);
-    }
-
-    /* inputs */
-
-    input{
-
-      background:rgba(255,255,255,0.03) !important;
-
-      border:1px solid rgba(255,255,255,0.06) !important;
-
-      border-radius:16px !important;
-
-      color:white !important;
-    }
-
-    input::placeholder{
-      color:rgba(255,255,255,0.28);
-    }
-
-    input:focus{
-
-      outline:none !important;
-
-      border-color:rgba(52,211,153,0.35) !important;
-
-      box-shadow:
-        0 0 0 4px rgba(52,211,153,0.08) !important;
-    }
-
-    /* button */
-
-    .main-btn{
-
-      background:
-        linear-gradient(145deg,#0f766e,#2563eb);
-
-      border:none;
-
-      border-radius:16px;
-
-      transition:0.3s;
-    }
-
-    .main-btn:hover{
-
-      transform:translateY(-2px);
-
-      box-shadow:
-        0 15px 35px rgba(37,99,235,0.18);
-    }
-
-    /* text */
-
-    .muted{
-      color:rgba(255,255,255,0.45) !important;
-    }
-
-    .title-white{
-      color:white !important;
-    }
-
-    /* scrollbar */
-
-    ::-webkit-scrollbar{
-      width:8px;
-      height:8px;
-    }
-
-    ::-webkit-scrollbar-thumb{
-      background:rgba(255,255,255,0.12);
-      border-radius:10px;
-    }
-
-  </style>
-</head>
-
-<body class="font-sans p-6">
-
-<div class="main-content">
-
-<script>
-  if (!localStorage.getItem('hr_logged')) {
-    window.location.href = 'login.html';
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Portal — Працівники</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --blue: #3B82F6;
+    --blue-dark: #2563EB;
+    --blue-light: #EFF6FF;
+    --green: #22C55E;
+    --green-light: #F0FDF4;
+    --green-text: #16A34A;
+    --red: #EF4444;
+    --red-light: #FEF2F2;
+    --red-text: #DC2626;
+    --ink: #111827;
+    --ink-mid: #374151;
+    --ink-light: #6B7280;
+    --border: #E5E7EB;
+    --bg: #F3F4F6;
+    --white: #FFFFFF;
   }
-</script>
 
-<div class="max-w-7xl mx-auto">
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
 
-  <!-- NAV -->
+  /* ── HEADER ── */
+  .header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    gap: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
 
-  <nav class="flex gap-4 mb-8 glass p-2 w-fit">
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: var(--blue);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: white;
+    flex-shrink: 0;
+  }
 
-    <a href="index.html" class="nav-btn nav-active">
-      База працівників
-    </a>
+  .logo-text {
+    font-size: 17px; font-weight: 700; color: var(--ink);
+    margin-right: 8px;
+  }
 
-    <a href="knowledge.html" class="nav-btn">
-      База знань
-    </a>
+  .nav { display: flex; gap: 4px; }
 
-    <button onclick="logout()" class="nav-btn text-red-400">
-      Вийти
-    </button>
+  .nav-btn {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 14px; font-weight: 500;
+    color: var(--ink-light);
+    background: none; border: none;
+    cursor: pointer; text-decoration: none;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
 
+  .nav-btn:hover { background: var(--bg); color: var(--ink); }
+
+  .nav-btn.active {
+    background: var(--blue-light);
+    color: var(--blue);
+  }
+
+  .nav-btn.danger { color: var(--red); }
+  .nav-btn.danger:hover { background: var(--red-light); }
+
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+  .loading-chip {
+    display: none;
+    font-size: 12px; font-weight: 500;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  /* ── PAGE ── */
+  .page { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+
+  .page-title { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 20px; }
+
+  /* stats row */
+  .stats-row { display: flex; gap: 12px; margin-bottom: 24px; }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 20px;
+    min-width: 100px;
+  }
+
+  .stat-num {
+    font-size: 26px; font-weight: 700; line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-num.blue { color: var(--blue); }
+  .stat-num.green { color: var(--green); }
+  .stat-num.red { color: var(--red); }
+
+  .stat-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--ink-light);
+    text-transform: uppercase;
+  }
+
+  /* main layout */
+  .main-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+
+  /* TABLE CARD */
+  .table-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tabs { display: flex; gap: 4px; }
+
+  .tab {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    color: var(--ink-light);
+    background: none; border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .tab:hover { background: var(--bg); color: var(--ink); }
+
+  .tab.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
+
+  .search-input {
+    height: 36px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    width: 200px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    background: var(--white);
+  }
+
+  .search-input::placeholder { color: #9CA3AF; }
+
+  /* employee list */
+  .emp-list { padding: 8px 0; }
+
+  .emp-row {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 14px;
+    transition: background 0.12s;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .emp-row:last-child { border-bottom: none; }
+  .emp-row:hover { background: var(--bg); }
+
+  .emp-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+    color: white;
+  }
+
+  .emp-info { flex: 1; min-width: 0; }
+
+  .emp-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+
+  .emp-sub { font-size: 12px; color: var(--ink-light); margin-top: 1px; }
+
+  .status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .badge-active { background: var(--green-light); color: var(--green-text); }
+  .badge-fired { background: var(--red-light); color: var(--red-text); }
+
+  .emp-btn {
+    font-size: 12px; font-weight: 500;
+    color: var(--blue);
+    background: none; border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .emp-btn:hover { background: var(--blue-light); }
+
+  .emp-doc-btn {
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-light);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+
+  .emp-doc-btn:hover { background: var(--bg); color: var(--ink); }
+
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--ink-light);
+    font-size: 14px;
+  }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    height: fit-content;
+    position: sticky;
+    top: 84px;
+  }
+
+  .form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .form-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+
+  .btn-cancel-edit {
+    font-size: 12px; font-weight: 500;
+    color: var(--red);
+    background: none; border: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    display: none;
+  }
+
+  .field { margin-bottom: 14px; }
+
+  .field label {
+    display: block;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-light);
+    margin-bottom: 5px;
+  }
+
+  .field input {
+    width: 100%;
+    height: 42px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .field input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    background: var(--white);
+  }
+
+  .field input::placeholder { color: #9CA3AF; }
+  .field input[readonly] { cursor: default; background: var(--bg); }
+
+  .status-active-field { color: var(--green-text) !important; font-weight: 600 !important; }
+  .status-fired-field { color: var(--red-text) !important; font-weight: 600 !important; }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .btn-submit {
+    width: 100%;
+    height: 44px;
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-submit:hover { background: var(--blue-dark); }
+
+  @media (max-width: 900px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .form-card { position: static; }
+    .stats-row { flex-wrap: wrap; }
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 16px; }
+    .header { padding: 0 16px; }
+    .logo-text { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo-icon">HR</div>
+  <div class="logo-text">Portal</div>
+  <nav class="nav">
+    <a href="index.html" class="nav-btn active">Працівники</a>
+    <a href="knowledge.html" class="nav-btn">База знань</a>
   </nav>
+  <div class="header-right">
+    <div id="loading" class="loading-chip">Оновлення...</div>
+    <button onclick="logout()" class="nav-btn danger">Вийти</button>
+  </div>
+</header>
 
-  <!-- HEADER -->
+<!-- PAGE -->
+<div class="page">
+  <div class="page-title">Картки обліку працівників</div>
 
-  <div class="flex justify-between items-center mb-6">
-
-    <h1 class="text-3xl font-bold title-white">
-      Картки обліку працівників
-    </h1>
-
-    <div id="loading"
-      class="text-sm font-semibold text-green-400 bg-green-500 bg-opacity-10 px-4 py-2 rounded-xl animate-pulse"
-      style="display:none;">
-
-      <i class="fas fa-sync-alt fa-spin mr-1"></i>
-      Оновлення даних...
-
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num blue" id="stat-total">—</div>
+      <div class="stat-label">Всього</div>
     </div>
-
+    <div class="stat-card">
+      <div class="stat-num green" id="stat-active">—</div>
+      <div class="stat-label">Активні</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num red" id="stat-fired">—</div>
+      <div class="stat-label">Звільнені</div>
+    </div>
   </div>
 
-  <!-- FILTERS -->
-
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white border-opacity-10 mb-6 pb-2">
-
-    <div class="flex space-x-6">
-
-      <button onclick="changeFilter('Активні')" id="tab-active"
-        class="py-2 px-1 muted hover:text-green-400 focus:outline-none font-medium tab-active">
-        Активні
-      </button>
-
-      <button onclick="changeFilter('Звільнені')" id="tab-fired"
-        class="py-2 px-1 muted hover:text-green-400 focus:outline-none font-medium">
-        Звільнені
-      </button>
-
-      <button onclick="changeFilter('Всі')" id="tab-all"
-        class="py-2 px-1 muted hover:text-green-400 focus:outline-none font-medium">
-        Всі
-      </button>
-
-    </div>
-
-    <div class="w-full md:w-72">
-
-      <input type="text"
-        id="search-input"
-        oninput="renderTable()"
-        placeholder="Пошук за ПІБ або відділом..."
-        class="w-full p-3 text-sm">
-
-    </div>
-
-  </div>
-
-  <!-- CONTENT -->
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="main-layout">
 
     <!-- TABLE -->
-
-    <div class="lg:col-span-2 glass p-4 overflow-hidden">
-
-      <h2 class="text-xl font-semibold title-white mb-4">
-        База співробітників
-      </h2>
-
-      <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
-
-        <table class="min-w-full divide-y divide-white divide-opacity-10">
-
-          <thead class="sticky top-0">
-
-            <tr>
-
-              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
-                ID
-              </th>
-
-              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
-                ПІБ / Посада
-              </th>
-
-              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
-                Відділ
-              </th>
-
-              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
-                Статус
-              </th>
-
-              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
-                Дії
-              </th>
-
-            </tr>
-
-          </thead>
-
-          <tbody id="employees-table-body"
-            class="divide-y divide-white divide-opacity-10 text-sm text-gray-300">
-          </tbody>
-
-        </table>
-
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="tabs">
+          <button class="tab active" id="tab-active" onclick="changeFilter('Активні')">Активні</button>
+          <button class="tab" id="tab-fired" onclick="changeFilter('Звільнені')">Звільнені</button>
+          <button class="tab" id="tab-all" onclick="changeFilter('Всі')">Всі</button>
+        </div>
+        <input type="text" class="search-input" id="search-input" oninput="renderTable()" placeholder="Пошук за ПІБ або відділом...">
       </div>
-
+      <div class="emp-list" id="employees-table-body"></div>
     </div>
 
     <!-- FORM -->
-
-    <div class="glass p-6 h-fit sticky top-6">
-
-      <div class="flex justify-between items-center mb-4">
-
-        <h2 id="form-title" class="text-xl font-semibold title-white">
-          Додати працівника
-        </h2>
-
-        <button onclick="resetForm()"
-          id="btn-cancel-edit"
-          class="hidden text-xs text-red-400 hover:underline">
-
-          Скасувати ред.
-
-        </button>
-
+    <div class="form-card">
+      <div class="form-header">
+        <div class="form-title" id="form-title">Додати працівника</div>
+        <button class="btn-cancel-edit" id="btn-cancel-edit" onclick="resetForm()">✕ Скасувати</button>
       </div>
 
-      <form id="employee-form" onsubmit="submitForm(event)" class="space-y-4">
-
+      <form id="employee-form" onsubmit="submitForm(event)">
         <input type="hidden" id="emp-id">
 
-        <div>
-
-          <label class="block text-xs font-semibold uppercase muted">
-            ПІБ працівника
-          </label>
-
-          <input type="text"
-            id="pib"
-            required
-            class="w-full mt-1 p-3 text-sm">
-
+        <div class="field">
+          <label>ПІБ працівника</label>
+          <input type="text" id="pib" required placeholder="Прізвище Ім'я По-батькові">
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-
-          <div>
-
-            <label class="block text-xs font-semibold uppercase muted">
-              Відділ
-            </label>
-
-            <input type="text"
-              id="department"
-              required
-              class="w-full mt-1 p-3 text-sm">
-
+        <div class="field-row">
+          <div class="field">
+            <label>Відділ</label>
+            <input type="text" id="department" required placeholder="Продажі">
           </div>
-
-          <div>
-
-            <label class="block text-xs font-semibold uppercase muted">
-              Посада
-            </label>
-
-            <input type="text"
-              id="position"
-              required
-              class="w-full mt-1 p-3 text-sm">
-
+          <div class="field">
+            <label>Посада</label>
+            <input type="text" id="position" required placeholder="Менеджер">
           </div>
-
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-
-          <div>
-
-            <label class="block text-xs font-semibold uppercase muted">
-              Початок адаптації
-            </label>
-
-            <input type="date"
-              id="adaptationDate"
-              required
-              class="w-full mt-1 p-3 text-sm">
-
+        <div class="field-row">
+          <div class="field">
+            <label>Початок адаптації</label>
+            <input type="date" id="adaptationDate" required>
           </div>
-
-          <div>
-
-            <label class="block text-xs font-semibold uppercase muted">
-              Початок роботи
-            </label>
-
-            <input type="date"
-              id="startDate"
-              required
-              class="w-full mt-1 p-3 text-sm">
-
+          <div class="field">
+            <label>Початок роботи</label>
+            <input type="date" id="startDate" required>
           </div>
-
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-
-          <div>
-
-            <label class="block text-xs font-semibold uppercase muted">
-              Дата звільнення
-            </label>
-
-            <input type="date"
-              id="dismissalDate"
-              onchange="autoUpdateStatus()"
-              class="w-full mt-1 p-3 text-sm">
-
+        <div class="field-row">
+          <div class="field">
+            <label>Дата звільнення</label>
+            <input type="date" id="dismissalDate" onchange="autoUpdateStatus()">
           </div>
-
-          <div>
-
-            <label class="block text-xs font-semibold uppercase muted">
-              Статус
-            </label>
-
-            <input type="text"
-              id="status"
-              value="Активний"
-              readonly
-              class="w-full mt-1 p-3 text-sm text-green-400 font-bold">
-
+          <div class="field">
+            <label>Статус</label>
+            <input type="text" id="status" value="Активний" readonly class="status-active-field">
           </div>
-
         </div>
 
-        <div>
-
-          <label class="block text-xs font-semibold uppercase muted">
-            Посилання на папку
-          </label>
-
-          <input type="url"
-            id="folderUrl"
-            placeholder="https://drive.google.com/..."
-            class="w-full mt-1 p-3 text-sm">
-
+        <div class="field">
+          <label>Посилання на папку</label>
+          <input type="url" id="folderUrl" placeholder="https://drive.google.com/...">
         </div>
 
-        <button type="submit"
-          id="btn-submit"
-          class="w-full main-btn text-white font-bold py-3 px-4 transition text-sm shadow">
-
-          Зберегти картку
-
-        </button>
-
+        <button type="submit" class="btn-submit" id="btn-submit">Зберегти картку</button>
       </form>
-
     </div>
 
   </div>
-
 </div>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
+if (!localStorage.getItem('hr_logged')) window.location.href = 'login.html';
 
+const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
 let allEmployees = [];
 let currentFilter = 'Активні';
 
-window.onload = function() {
-  loadEmployees();
-};
+const AVATAR_COLORS = ['#3B82F6','#8B5CF6','#EC4899','#F59E0B','#10B981','#6366F1','#EF4444','#14B8A6'];
 
-function showLoading(show) {
-  document.getElementById('loading').style.display = show ? 'block' : 'none';
+function getAvatarColor(name) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-function logout() {
-  localStorage.clear();
-  window.location.href = 'login.html';
+function getInitials(name) {
+  const parts = (name || '').trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return (name || '?')[0].toUpperCase();
 }
 
-// ======================================
-// LOAD EMPLOYEES
-// ======================================
+function showLoading(v) { document.getElementById('loading').style.display = v ? 'block' : 'none'; }
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+window.onload = loadEmployees;
+
 async function loadEmployees() {
-  const cachedData = localStorage.getItem('hr_employees_cache');
-
-  if (cachedData) {
-    allEmployees = JSON.parse(cachedData);
-    renderTable();
-  } else {
-    showLoading(true);
-  }
-
+  const cached = localStorage.getItem('hr_employees_cache');
+  if (cached) { allEmployees = JSON.parse(cached); renderTable(); updateStats(); }
+  else showLoading(true);
   try {
     const login = localStorage.getItem('hr_user');
     const password = localStorage.getItem('hr_pass');
-
-    const response = await fetch(
-      API_URL +
-      '?login=' + encodeURIComponent(login) +
-      '&password=' + encodeURIComponent(password)
-    );
-
-    const result = await response.json();
-
+    const res = await fetch(API_URL + '?login=' + encodeURIComponent(login) + '&password=' + encodeURIComponent(password));
+    const result = await res.json();
     if (result.success) {
       allEmployees = result.data || [];
       localStorage.setItem('hr_employees_cache', JSON.stringify(allEmployees));
-      renderTable();
-    } else {
-      localStorage.clear();
-      window.location.href = 'login.html';
-    }
-  } catch (error) {
-    console.error(error);
-    if (!cachedData) {
-      alert('Помилка завантаження');
-    }
-  }
-
+      renderTable(); updateStats();
+    } else { localStorage.clear(); window.location.href = 'login.html'; }
+  } catch(e) { console.error(e); if (!cached) alert('Помилка завантаження'); }
   showLoading(false);
 }
 
-// ======================================
-// RENDER TABLE
-// ======================================
-function renderTable() {
-  const tbody = document.getElementById('employees-table-body');
-  tbody.innerHTML = '';
+function updateStats() {
+  document.getElementById('stat-total').textContent = allEmployees.length;
+  document.getElementById('stat-active').textContent = allEmployees.filter(e => e.status === 'Активний').length;
+  document.getElementById('stat-fired').textContent = allEmployees.filter(e => e.status === 'Звільнений').length;
+}
 
-  const searchQuery = document.getElementById('search-input').value.toLowerCase();
+function renderTable() {
+  const container = document.getElementById('employees-table-body');
+  container.innerHTML = '';
+  const q = document.getElementById('search-input').value.toLowerCase();
 
   const filtered = allEmployees.filter(emp => {
     if (currentFilter === 'Активні' && emp.status !== 'Активний') return false;
     if (currentFilter === 'Звільнені' && emp.status !== 'Звільнений') return false;
-
-    const matchesPib = (emp.pib || '').toLowerCase().includes(searchQuery);
-    const matchesDept = (emp.department || '').toLowerCase().includes(searchQuery);
-
-    return matchesPib || matchesDept;
+    return (emp.pib||'').toLowerCase().includes(q) || (emp.department||'').toLowerCase().includes(q);
   });
 
-  if (filtered.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="5" class="px-4 py-8 text-center muted">
-          Нікого не знайдено
-        </td>
-      </tr>`;
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state">Нікого не знайдено</div>`;
     return;
   }
 
   filtered.forEach(emp => {
+    const isActive = emp.status === 'Активний';
+    const initials = getInitials(emp.pib);
+    const color = getAvatarColor(emp.pib);
+    const folderBtn = emp.folderUrl
+      ? `<a href="${emp.folderUrl}" target="_blank" class="emp-doc-btn">📁 Документи</a>` : '';
 
-    const folderBadge = emp.folderUrl
-      ? `<a href="${emp.folderUrl}" target="_blank" class="text-green-400 hover:text-blue-400 font-medium inline-flex items-center gap-1">📁 Документи</a>`
-      : `<span class="muted italic">Немає лінку</span>`;
-
-    const statusClass = emp.status === 'Активний'
-      ? 'bg-green-500 bg-opacity-10 text-green-400'
-      : 'bg-red-500 bg-opacity-10 text-red-400';
-
-    tbody.innerHTML += `
-      <tr class="transition">
-
-        <td class="px-4 py-3 font-bold title-white">
-          #${emp.id}
-        </td>
-
-        <td class="px-4 py-3">
-
-          <div class="font-semibold title-white">
-            ${emp.pib}
-          </div>
-
-          <div class="text-xs muted">
-            ${emp.position}
-          </div>
-
-        </td>
-
-        <td class="px-4 py-3 muted">
-          ${emp.department}
-        </td>
-
-        <td class="px-4 py-3">
-
-          <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusClass}">
-            ${emp.status}
-          </span>
-
-        </td>
-
-        <td class="px-4 py-3 space-x-3">
-
-          <button onclick="editEmployee(${emp.id})"
-            class="text-blue-400 hover:text-blue-300 font-medium">
-
-            Редагувати
-
-          </button>
-
-          ${folderBadge}
-
-        </td>
-
-      </tr>
+    const row = document.createElement('div');
+    row.className = 'emp-row';
+    row.innerHTML = `
+      <div class="emp-avatar" style="background:${color}">${initials}</div>
+      <div class="emp-info">
+        <div class="emp-name">${emp.pib}</div>
+        <div class="emp-sub">${emp.department} · ${emp.position}</div>
+      </div>
+      <span class="status-badge ${isActive ? 'badge-active' : 'badge-fired'}">${emp.status}</span>
+      <button class="emp-btn" onclick="editEmployee(${emp.id})">Редагувати</button>
+      ${folderBtn}
     `;
+    container.appendChild(row);
   });
 }
 
-function changeFilter(status) {
-  currentFilter = status;
-
-  document.getElementById('tab-all').classList.remove('tab-active');
-  document.getElementById('tab-active').classList.remove('tab-active');
-  document.getElementById('tab-fired').classList.remove('tab-active');
-
-  if (status === 'Всі') document.getElementById('tab-all').classList.add('tab-active');
-  if (status === 'Активні') document.getElementById('tab-active').classList.add('tab-active');
-  if (status === 'Звільнені') document.getElementById('tab-fired').classList.add('tab-active');
-
+function changeFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  const map = { 'Активні': 'tab-active', 'Звільнені': 'tab-fired', 'Всі': 'tab-all' };
+  document.getElementById(map[f]).classList.add('active');
   renderTable();
 }
 
 function autoUpdateStatus() {
-  const dateVal = document.getElementById('dismissalDate').value;
-  const statusField = document.getElementById('status');
-
-  if (dateVal) {
-    statusField.value = 'Звільнений';
-    statusField.classList.remove('text-green-600');
-    statusField.classList.add('text-red-400');
-  } else {
-    statusField.value = 'Активний';
-    statusField.classList.remove('text-red-400');
-    statusField.classList.add('text-green-400');
-  }
+  const val = document.getElementById('dismissalDate').value;
+  const s = document.getElementById('status');
+  s.value = val ? 'Звільнений' : 'Активний';
+  s.className = val ? 'status-fired-field' : 'status-active-field';
 }
 
 function editEmployee(id) {
   const emp = allEmployees.find(e => e.id == id);
-
   if (!emp) return;
-
   document.getElementById('emp-id').value = emp.id;
   document.getElementById('pib').value = emp.pib;
   document.getElementById('department').value = emp.department;
@@ -719,51 +584,30 @@ function editEmployee(id) {
   document.getElementById('startDate').value = emp.startDate;
   document.getElementById('dismissalDate').value = emp.dismissalDate;
   document.getElementById('folderUrl').value = emp.folderUrl;
-
   autoUpdateStatus();
-
-  document.getElementById('form-title').innerText = `Редагувати #${emp.id}`;
-  document.getElementById('btn-submit').innerText = 'Оновити дані працівника';
-
-  document.getElementById('btn-submit').classList.replace('bg-blue-600', 'bg-yellow-600');
-  document.getElementById('btn-submit').classList.replace('hover:bg-blue-700', 'hover:bg-yellow-700');
-
-  document.getElementById('btn-cancel-edit').classList.remove('hidden');
+  document.getElementById('form-title').textContent = `Редагувати #${emp.id}`;
+  document.getElementById('btn-submit').textContent = 'Оновити дані';
+  document.getElementById('btn-cancel-edit').style.display = 'block';
+  document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth' });
 }
 
 function resetForm() {
-
   document.getElementById('employee-form').reset();
-
   document.getElementById('emp-id').value = '';
-
-  autoUpdateStatus();
-
-  document.getElementById('form-title').innerText = 'Додати працівника';
-  document.getElementById('btn-submit').innerText = 'Зберегти картку';
-
-  document.getElementById('btn-submit').classList.replace('bg-yellow-600', 'bg-blue-600');
-  document.getElementById('btn-submit').classList.replace('hover:bg-yellow-700', 'hover:bg-blue-700');
-
-  document.getElementById('btn-cancel-edit').classList.add('hidden');
+  document.getElementById('status').value = 'Активний';
+  document.getElementById('status').className = 'status-active-field';
+  document.getElementById('form-title').textContent = 'Додати працівника';
+  document.getElementById('btn-submit').textContent = 'Зберегти картку';
+  document.getElementById('btn-cancel-edit').style.display = 'none';
 }
 
-// ======================================
-// SUBMIT
-// ======================================
 async function submitForm(e) {
-
   e.preventDefault();
-
   showLoading(true);
-
-  const employeeData = {
-
+  const data = {
     action: 'addEmployee',
-
     login: localStorage.getItem('hr_user'),
     password: localStorage.getItem('hr_pass'),
-
     id: document.getElementById('emp-id').value,
     pib: document.getElementById('pib').value,
     department: document.getElementById('department').value,
@@ -774,43 +618,18 @@ async function submitForm(e) {
     status: document.getElementById('status').value,
     folderUrl: document.getElementById('folderUrl').value
   };
-
   try {
-
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      body: JSON.stringify(employeeData)
-    });
-
-    const result = await response.json();
-
+    const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(data) });
+    const result = await res.json();
     if (result.success) {
-
       resetForm();
-
       localStorage.removeItem('hr_employees_cache');
-
       await loadEmployees();
-
       alert('Дані успішно збережено!');
-
-    } else {
-
-      alert('Помилка: ' + result.error);
-    }
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert('Помилка звʼязку з сервером');
-  }
-
+    } else { alert('Помилка: ' + result.error); }
+  } catch(err) { console.error(err); alert('Помилка звʼязку з сервером'); }
   showLoading(false);
 }
 </script>
-
-</div>
-
 </body>
 </html>
