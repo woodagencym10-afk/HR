@@ -1,158 +1,38 @@
 <!DOCTYPE html>
-<html lang="uk">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+<body>
+  <h2>Вхід</h2>
+  <input type="text" id="login" placeholder="Логін">
+  <input type="password" id="password" placeholder="Пароль">
+  <button onclick="handleLogin()">УВІЙТИ</button>
 
-  <title>HR Portal</title>
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
 
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-
-<body class="bg-gray-900 min-h-screen flex items-center justify-center p-6">
-
-  <div class="w-full max-w-md bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-700">
-
-    <div class="text-center mb-8">
-
-      <div class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold">
-        HR
-      </div>
-
-      <h1 class="text-3xl font-bold text-white mt-5">
-        HR Portal
-      </h1>
-
-      <p class="text-gray-400 mt-2">
-        Авторизація
-      </p>
-
-    </div>
-
-    <div class="space-y-5">
-
-      <input
-        type="text"
-        id="login"
-        placeholder="Логін"
-        class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-
-      <input
-        type="password"
-        id="password"
-        placeholder="Пароль"
-        class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-
-      <button
-        id="loginBtn"
-        onclick="handleLogin()"
-        class="w-full bg-blue-600 hover:bg-blue-500 transition text-white font-bold py-4 rounded-xl"
-      >
-        УВІЙТИ
-      </button>
-
-      <div
-        id="errorBox"
-        class="hidden bg-red-500/20 border border-red-500 text-red-300 text-sm p-3 rounded-xl"
-      ></div>
-
-    </div>
-
-  </div>
-
-<script>
-
-const API_URL = 'ТУТ_ТВІЙ_GOOGLE_SCRIPT_URL';
-
-async function handleLogin() {
-
-  const login = document.getElementById('login').value;
-  const password = document.getElementById('password').value;
-
-  const button = document.getElementById('loginBtn');
-
-  hideError();
-
-  if (!login || !password) {
-    showError('Заповніть всі поля');
-    return;
-  }
-
-  button.disabled = true;
-  button.innerText = 'Перевірка...';
-
-  try {
-
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain'
-      },
-      body: JSON.stringify({
-        action: 'login',
-        login: login,
-        password: password
-      })
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      localStorage.setItem('hr_login', login);
-localStorage.setItem('hr_password', password);
-
-      localStorage.setItem('hr_user', result.name);
-      localStorage.setItem('hr_role', result.role);
-      localStorage.setItem('hr_user_id', result.id);
-      localStorage.setItem('hr_logged', 'true');
-
-      window.location.href = 'index.html';
-
-    } else {
-
-      showError('Невірний логін або пароль');
-
+    async function handleLogin() {
+      const login = document.getElementById('login').value;
+      const pass = document.getElementById('password').value;
+      
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'login', login: login, password: pass })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          localStorage.setItem('hr_user', login);
+          localStorage.setItem('hr_pass', pass);
+          localStorage.setItem('hr_role', result.role);
+          window.location.href = result.role === 'user' ? 'knowledge.html' : 'index.html';
+        } else {
+          alert('Невірний логін або пароль');
+        }
+      } catch(e) {
+        alert('Помилка сервера: ' + e);
+      }
     }
-
-  } catch (e) {
-
-    console.error(e);
-
-    showError('Помилка сервера');
-
-  }
-
-  button.disabled = false;
-  button.innerText = 'УВІЙТИ';
-}
-
-function showError(text) {
-
-  const box = document.getElementById('errorBox');
-
-  box.innerText = text;
-
-  box.classList.remove('hidden');
-}
-
-function hideError() {
-
-  document
-    .getElementById('errorBox')
-    .classList.add('hidden');
-}
-
-document.addEventListener('keydown', function(e) {
-
-  if (e.key === 'Enter') {
-    handleLogin();
-  }
-
-});
-
-</script>
-
+  </script>
 </body>
 </html>
