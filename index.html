@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>База Працівників</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: bold; }
   </style>
@@ -21,7 +22,7 @@
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold text-gray-800">Картки обліку працівників</h1>
       <div id="loading" class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded animate-pulse" style="display: none;">
-        Завантаження даних...
+        <i class="fas fa-sync-alt fa-spin mr-1"></i> Оновлення даних...
       </div>
     </div>
 
@@ -120,6 +121,7 @@
   </div>
 
   <script>
+    // ВАШ API ЛІНК
     const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
     
     let allEmployees = [];
@@ -133,22 +135,37 @@
       document.getElementById('loading').style.display = show ? 'block' : 'none';
     }
 
-    // Завантаження даних з API (Google Таблиці)
+    // Завантаження даних з кешуванням
     async function loadEmployees() {
-      showLoading(true);
+      // 1. СПРОБА ВЗЯТИ ДАНІ З ПАМ'ЯТІ (КЕШУ)
+      const cachedData = localStorage.getItem('hr_employees_cache');
+      if (cachedData) {
+        allEmployees = JSON.parse(cachedData);
+        renderTable(); // Малюємо таблицю миттєво
+      } else {
+        // Показуємо лоадер тільки якщо немає кешу
+        showLoading(true); 
+      }
+
+      // 2. ФОНОВИЙ ЗАПИТ ДО GOOGLE (завжди беремо найсвіжіше)
       try {
         const response = await fetch(API_URL);
-        const data = await response.json();
-        allEmployees = data;
+        const freshData = await response.json();
+        
+        allEmployees = freshData;
+        localStorage.setItem('hr_employees_cache', JSON.stringify(freshData));
+        
+        // Оновлюємо таблицю у фоні
         renderTable();
       } catch (error) {
         console.error('Помилка завантаження:', error);
-        alert('Не вдалося завантажити дані з таблиці. Перевірте консоль для деталей.');
+        if (!cachedData) {
+          alert('Не вдалося завантажити дані з таблиці. Перевірте консоль для деталей.');
+        }
       }
       showLoading(false);
     }
 
-    // Відображення таблиці
     function renderTable() {
       const tbody = document.getElementById('employees-table-body');
       tbody.innerHTML = '';
@@ -198,7 +215,6 @@
       });
     }
 
-    // Перемикання вкладок
     function changeFilter(status) {
       currentFilter = status;
       document.getElementById('tab-all').classList.remove('tab-active');
@@ -212,7 +228,6 @@
       renderTable();
     }
 
-    // Автоматична зміна статусу
     function autoUpdateStatus() {
       const dateVal = document.getElementById('dismissalDate').value;
       const statusField = document.getElementById('status');
@@ -228,7 +243,6 @@
       }
     }
 
-    // Завантаження даних у форму для редагування
     function editEmployee(id) {
       const emp = allEmployees.find(e => e.id == id);
       if (!emp) return;
@@ -251,7 +265,6 @@
       document.getElementById('btn-cancel-edit').classList.remove('hidden');
     }
 
-    // Скидання форми
     function resetForm() {
       document.getElementById('employee-form').reset();
       document.getElementById('emp-id').value = '';
@@ -265,7 +278,6 @@
       document.getElementById('btn-cancel-edit').classList.add('hidden');
     }
 
-    // Відправка даних на API
     async function submitForm(e) {
       e.preventDefault();
       showLoading(true);
@@ -292,6 +304,10 @@
         
         if(result.success) {
           resetForm();
+          
+          // ОЧИЩАЄМО КЕШ, щоб примусово підтягнути нові дані
+          localStorage.removeItem('hr_employees_cache');
+          
           await loadEmployees();
           alert('Дані успішно збережено!');
         } else {
