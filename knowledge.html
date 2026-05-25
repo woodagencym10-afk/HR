@@ -37,7 +37,7 @@
       </a>
     </nav>
 
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex justify-between items-center mb-6">
       <div>
         <h1 class="text-3xl font-extrabold text-gray-900">База Знань</h1>
         <p class="text-gray-500 mt-1">Централізований доступ до всіх інструкцій та регламентів компанії</p>
@@ -50,8 +50,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <div class="lg:col-span-2">
+        
+        <div class="mb-6 relative">
+          <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+          <input type="text" id="search-kb" oninput="renderKnowledge()" placeholder="Шукати за назвою, темою або описом..." class="w-full pl-11 p-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition">
+        </div>
+
         <div id="kb-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          </div>
+        </div>
       </div>
 
       <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-fit sticky top-8">
@@ -117,18 +123,19 @@
   </div>
 
   <script>
-    // === ВСТАВ СВОЄ ПОСИЛАННЯ ТУТ ===
+    // === ВСТАВТЕ СВІЙ ЛІНК ВІД GOOGLE SCRIPT ТУТ ===
     const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
+
+    // Глобальна змінна для зберігання всіх статей
+    let allKnowledge = [];
 
     window.onload = function() {
       loadKnowledge();
     };
 
-    // Очищення посилання для "чистого" вигляду читання
     function getPreviewUrl(url) {
       if (!url) return '';
       if (url.includes('docs.google.com') && url.includes('/edit')) {
-        // Замінюємо /edit на /preview?rm=minimal для красивого рідера
         return url.replace(/\/edit.*$/, '/preview?rm=minimal');
       }
       return url;
@@ -139,76 +146,103 @@
       document.getElementById('iframe-loading').style.display = 'flex';
       document.getElementById('doc-iframe').src = getPreviewUrl(url);
       document.getElementById('doc-modal').classList.remove('hidden');
-      document.body.style.overflow = 'hidden'; // Забороняємо скрол фону
+      document.body.style.overflow = 'hidden'; 
     }
 
     function closeModal() {
       document.getElementById('doc-modal').classList.add('hidden');
       document.getElementById('doc-iframe').src = ''; 
-      document.body.style.overflow = 'auto'; // Повертаємо скрол
+      document.body.style.overflow = 'auto'; 
     }
 
-    // Закриття по кліку поза вікном
     document.getElementById('doc-modal').addEventListener('click', function(e) {
       if (e.target === this) closeModal();
     });
 
-    // Завантаження даних
+    // Завантаження даних з сервера
     async function loadKnowledge() {
       document.getElementById('loading').classList.remove('hidden');
-      const container = document.getElementById('kb-container');
       
       try {
         const response = await fetch(API_URL + '?action=getKnowledge');
-        const data = await response.json();
+        allKnowledge = await response.json();
         
-        container.innerHTML = '';
+        // Викликаємо функцію малювання після завантаження
+        renderKnowledge();
         
-        if (!data || data.length === 0) {
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('kb-container').innerHTML = '<div class="col-span-2 text-center text-red-500 p-10 bg-white rounded-2xl">Помилка завантаження даних. Перевірте API_URL.</div>';
+      }
+      
+      document.getElementById('loading').classList.add('hidden');
+    }
+
+    // Функція малювання та фільтрації (Пошук)
+    function renderKnowledge() {
+      const container = document.getElementById('kb-container');
+      container.innerHTML = '';
+      
+      // Отримуємо текст з пошуку
+      const query = document.getElementById('search-kb').value.toLowerCase();
+      
+      // Фільтруємо масив
+      const filteredData = allKnowledge.filter(item => {
+        if (!item['Назва статті']) return false; // Пропускаємо пусті рядки
+        
+        const title = (item['Назва статті'] || '').toLowerCase();
+        const category = (item['Категорія'] || '').toLowerCase();
+        const desc = (item['Короткий опис'] || '').toLowerCase();
+        
+        // Повертаємо ті, де є збіг у будь-якому з полів
+        return title.includes(query) || category.includes(query) || desc.includes(query);
+      });
+
+      if (filteredData.length === 0) {
+        if (query) {
+          container.innerHTML = `
+            <div class="col-span-2 p-12 text-center bg-white rounded-3xl border border-gray-100">
+              <i class="fas fa-search text-gray-300 text-5xl mb-4"></i>
+              <p class="text-gray-500 font-medium text-lg">За запитом "${document.getElementById('search-kb').value}" нічого не знайдено.</p>
+            </div>`;
+        } else {
           container.innerHTML = `
             <div class="col-span-2 p-12 text-center bg-white rounded-3xl border-2 border-dashed border-gray-200">
               <i class="fas fa-folder-open text-gray-200 text-6xl mb-4"></i>
               <p class="text-gray-400 font-medium text-lg">Поки що жодних інструкцій немає</p>
             </div>`;
-        } else {
-          data.forEach(item => {
-            if(item['Назва статті']) {
-              const safeTitle = item['Назва статті'].replace(/'/g, "\\'").replace(/"/g, "&quot;");
-              const safeUrl = item['Посилання на Google Doc'];
-
-              container.innerHTML += `
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
-                  <div class="flex justify-between items-start mb-4">
-                    <span class="bg-blue-50 text-blue-600 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100">
-                      ${item['Категорія'] || 'Інше'}
-                    </span>
-                  </div>
-                  <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition">${item['Назва статті']}</h3>
-                  <p class="text-sm text-gray-500 mb-6 flex-grow leading-relaxed">${item['Короткий опис'] || ''}</p>
-                  
-                  <div class="flex justify-between items-center pt-5 border-t border-gray-50">
-                    <div class="flex items-center text-gray-400">
-                      <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center mr-2">
-                        <i class="fas fa-user text-[10px]"></i>
-                      </div>
-                      <span class="text-xs font-semibold">${item['Автор (хто додав)'] || 'Admin'}</span>
-                    </div>
-                    
-                    <button onclick="openModal('${safeUrl}', '${safeTitle}')" class="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-600 transition flex items-center gap-2 shadow-sm">
-                      <i class="fas fa-book-open"></i> ЧИТАТИ
-                    </button>
-                  </div>
-                </div>
-              `;
-            }
-          });
         }
-      } catch (error) {
-        console.error('Error:', error);
-        container.innerHTML = '<div class="col-span-2 text-center text-red-500 p-10 bg-white rounded-2xl">Помилка завантаження даних. Перевірте API_URL.</div>';
+      } else {
+        filteredData.forEach(item => {
+          const safeTitle = item['Назва статті'].replace(/'/g, "\\'").replace(/"/g, "&quot;");
+          const safeUrl = item['Посилання на Google Doc'];
+
+          container.innerHTML += `
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
+              <div class="flex justify-between items-start mb-4">
+                <span class="bg-blue-50 text-blue-600 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100">
+                  ${item['Категорія'] || 'Інше'}
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition">${item['Назва статті']}</h3>
+              <p class="text-sm text-gray-500 mb-6 flex-grow leading-relaxed">${item['Короткий опис'] || ''}</p>
+              
+              <div class="flex justify-between items-center pt-5 border-t border-gray-50">
+                <div class="flex items-center text-gray-400">
+                  <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                    <i class="fas fa-user text-[10px]"></i>
+                  </div>
+                  <span class="text-xs font-semibold">${item['Автор (хто додав)'] || 'HR'}</span>
+                </div>
+                
+                <button onclick="openModal('${safeUrl}', '${safeTitle}')" class="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-600 transition flex items-center gap-2 shadow-sm">
+                  <i class="fas fa-book-open"></i> ЧИТАТИ
+                </button>
+              </div>
+            </div>
+          `;
+        });
       }
-      
-      document.getElementById('loading').classList.add('hidden');
     }
 
     // Збереження статті
@@ -235,7 +269,7 @@
         
         if (result.success) {
           document.getElementById('kb-form').reset();
-          await loadKnowledge();
+          await loadKnowledge(); // Це перезавантажить дані і відмалює картки заново
           alert('Чудово! Статтю додано до бази знань.');
         } else {
           alert('Помилка: ' + (result.error || 'Невідома помилка'));
