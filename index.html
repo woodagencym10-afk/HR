@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>База Працівників</title>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
@@ -11,25 +12,26 @@
   <style>
 
     *{
-      scroll-behavior:smooth;
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
     }
 
     body{
-      background:
-        radial-gradient(circle at top left, rgba(34,197,94,0.06), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(37,99,235,0.08), transparent 35%),
-        linear-gradient(145deg,#020617,#07110f,#08131c);
 
-      min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(16,185,129,0.05), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(37,99,235,0.06), transparent 35%),
+        #050816;
 
       color:white;
 
-      position:relative;
-
       overflow-x:hidden;
+
+      position:relative;
     }
 
-    /* GLOW */
+    /* GRID */
 
     body::before{
 
@@ -37,20 +39,23 @@
 
       position:fixed;
 
-      width:700px;
-      height:700px;
+      inset:0;
 
-      background:rgba(34,197,94,0.05);
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
 
-      border-radius:50%;
+      background-size:60px 60px;
 
-      filter:blur(120px);
+      mask-image:
+        radial-gradient(circle at center, black 40%, transparent 100%);
 
-      top:-300px;
-      left:-250px;
+      pointer-events:none;
 
       z-index:0;
     }
+
+    /* glow */
 
     body::after{
 
@@ -61,102 +66,88 @@
       width:700px;
       height:700px;
 
-      background:rgba(37,99,235,0.05);
-
-      border-radius:50%;
+      background:rgba(16,185,129,0.05);
 
       filter:blur(120px);
 
-      bottom:-350px;
-      right:-250px;
+      border-radius:50%;
+
+      top:-300px;
+      left:-300px;
 
       z-index:0;
     }
 
-    /* GRID */
-
-    .background-grid{
-
-      position:fixed;
-
-      inset:0;
-
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-
-      background-size:60px 60px;
-
-      opacity:0.7;
-
-      mask-image:
-        radial-gradient(circle at center, black 45%, transparent 100%);
-
-      pointer-events:none;
-
-      z-index:0;
+    .main-content{
+      position:relative;
+      z-index:2;
     }
 
-    /* GLASS */
+    /* glass */
 
     .glass{
 
-      background:rgba(7,15,13,0.82);
+      background:rgba(12,18,35,0.72);
 
-      backdrop-filter:blur(22px);
+      backdrop-filter:blur(18px);
 
-      border:1px solid rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.05);
 
       box-shadow:
-        0 25px 70px rgba(0,0,0,0.35),
-        inset 0 1px 0 rgba(255,255,255,0.04);
+        0 10px 40px rgba(0,0,0,0.35);
 
       border-radius:24px;
     }
 
-    /* NAV */
+    /* nav */
 
     .nav-btn{
 
-      padding:10px 18px;
+      padding:12px 18px;
 
       border-radius:14px;
 
       transition:0.25s;
 
-      font-weight:600;
+      color:rgba(255,255,255,0.65);
 
-      color:rgba(255,255,255,0.7);
+      font-weight:500;
     }
 
     .nav-btn:hover{
+
       background:rgba(255,255,255,0.04);
+
+      color:white;
     }
 
     .nav-active{
 
       background:
-        linear-gradient(145deg,#166534,#2563eb);
+        linear-gradient(145deg,#0f766e,#2563eb);
 
       color:white;
     }
 
-    /* TABS */
+    /* tabs */
 
-    .tab-active {
-      border-bottom: 2px solid #22c55e;
-      color: #22c55e;
-      font-weight: bold;
+    .tab-active{
+
+      color:#34d399;
+
+      border-bottom:2px solid #34d399;
+
+      font-weight:600;
     }
 
-    /* TABLE */
+    /* table */
 
     table{
-      color:#d1d5db;
+      color:rgba(255,255,255,0.75);
     }
 
     thead{
-      background:rgba(255,255,255,0.03) !important;
+      background:rgba(255,255,255,0.03);
     }
 
     tbody tr{
@@ -164,10 +155,10 @@
     }
 
     tbody tr:hover{
-      background:rgba(255,255,255,0.03) !important;
+      background:rgba(255,255,255,0.03);
     }
 
-    /* INPUTS */
+    /* inputs */
 
     input{
 
@@ -175,56 +166,58 @@
 
       border:1px solid rgba(255,255,255,0.06) !important;
 
-      color:white !important;
+      border-radius:16px !important;
 
-      border-radius:14px !important;
+      color:white !important;
     }
 
     input::placeholder{
-      color:rgba(255,255,255,0.3);
+      color:rgba(255,255,255,0.28);
     }
 
     input:focus{
 
       outline:none !important;
 
-      border-color:rgba(34,197,94,0.4) !important;
+      border-color:rgba(52,211,153,0.35) !important;
 
       box-shadow:
-        0 0 0 4px rgba(34,197,94,0.08) !important;
+        0 0 0 4px rgba(52,211,153,0.08) !important;
     }
 
-    /* BUTTON */
+    /* button */
 
-    .green-btn{
+    .main-btn{
 
       background:
-        linear-gradient(145deg,#166534,#2563eb);
+        linear-gradient(145deg,#0f766e,#2563eb);
 
-      transition:0.3s;
+      border:none;
 
       border-radius:16px;
+
+      transition:0.3s;
     }
 
-    .green-btn:hover{
+    .main-btn:hover{
 
       transform:translateY(-2px);
 
       box-shadow:
-        0 15px 35px rgba(37,99,235,0.20);
+        0 15px 35px rgba(37,99,235,0.18);
     }
 
-    /* TEXT */
+    /* text */
 
-    .title{
+    .muted{
+      color:rgba(255,255,255,0.45) !important;
+    }
+
+    .title-white{
       color:white !important;
     }
 
-    .muted{
-      color:rgba(255,255,255,0.5) !important;
-    }
-
-    /* SCROLL */
+    /* scrollbar */
 
     ::-webkit-scrollbar{
       width:8px;
@@ -241,17 +234,15 @@
 
 <body class="font-sans p-6">
 
-<div class="background-grid"></div>
+<div class="main-content">
 
 <script>
-
   if (!localStorage.getItem('hr_logged')) {
     window.location.href = 'login.html';
   }
-
 </script>
 
-<div class="max-w-7xl mx-auto relative z-10">
+<div class="max-w-7xl mx-auto">
 
   <!-- NAV -->
 
@@ -265,7 +256,7 @@
       База знань
     </a>
 
-    <button onclick="logout()" class="nav-btn text-red-400 hover:bg-red-500 hover:bg-opacity-10">
+    <button onclick="logout()" class="nav-btn text-red-400">
       Вийти
     </button>
 
@@ -275,7 +266,7 @@
 
   <div class="flex justify-between items-center mb-6">
 
-    <h1 class="text-3xl font-bold title">
+    <h1 class="text-3xl font-bold title-white">
       Картки обліку працівників
     </h1>
 
@@ -315,11 +306,10 @@
 
     <div class="w-full md:w-72">
 
-      <input
-        type="text"
+      <input type="text"
         id="search-input"
         oninput="renderTable()"
-        placeholder="Пошук..."
+        placeholder="Пошук за ПІБ або відділом..."
         class="w-full p-3 text-sm">
 
     </div>
@@ -334,7 +324,7 @@
 
     <div class="lg:col-span-2 glass p-4 overflow-hidden">
 
-      <h2 class="text-xl font-semibold text-white mb-4">
+      <h2 class="text-xl font-semibold title-white mb-4">
         База співробітників
       </h2>
 
@@ -346,23 +336,23 @@
 
             <tr>
 
-              <th class="px-4 py-3 text-left text-xs font-semibold uppercase muted">
+              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
                 ID
               </th>
 
-              <th class="px-4 py-3 text-left text-xs font-semibold uppercase muted">
+              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
                 ПІБ / Посада
               </th>
 
-              <th class="px-4 py-3 text-left text-xs font-semibold uppercase muted">
+              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
                 Відділ
               </th>
 
-              <th class="px-4 py-3 text-left text-xs font-semibold uppercase muted">
+              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
                 Статус
               </th>
 
-              <th class="px-4 py-3 text-left text-xs font-semibold uppercase muted">
+              <th class="px-4 py-3 text-left text-xs font-semibold muted uppercase">
                 Дії
               </th>
 
@@ -371,7 +361,7 @@
           </thead>
 
           <tbody id="employees-table-body"
-            class="divide-y divide-white divide-opacity-10 text-sm">
+            class="divide-y divide-white divide-opacity-10 text-sm text-gray-300">
           </tbody>
 
         </table>
@@ -386,7 +376,7 @@
 
       <div class="flex justify-between items-center mb-4">
 
-        <h2 id="form-title" class="text-xl font-semibold text-white">
+        <h2 id="form-title" class="text-xl font-semibold title-white">
           Додати працівника
         </h2>
 
@@ -394,7 +384,7 @@
           id="btn-cancel-edit"
           class="hidden text-xs text-red-400 hover:underline">
 
-          Скасувати
+          Скасувати ред.
 
         </button>
 
@@ -410,7 +400,10 @@
             ПІБ працівника
           </label>
 
-          <input type="text" id="pib" required class="w-full mt-1 p-3 text-sm">
+          <input type="text"
+            id="pib"
+            required
+            class="w-full mt-1 p-3 text-sm">
 
         </div>
 
@@ -422,7 +415,10 @@
               Відділ
             </label>
 
-            <input type="text" id="department" required class="w-full mt-1 p-3 text-sm">
+            <input type="text"
+              id="department"
+              required
+              class="w-full mt-1 p-3 text-sm">
 
           </div>
 
@@ -432,7 +428,10 @@
               Посада
             </label>
 
-            <input type="text" id="position" required class="w-full mt-1 p-3 text-sm">
+            <input type="text"
+              id="position"
+              required
+              class="w-full mt-1 p-3 text-sm">
 
           </div>
 
@@ -446,7 +445,10 @@
               Початок адаптації
             </label>
 
-            <input type="date" id="adaptationDate" required class="w-full mt-1 p-3 text-sm">
+            <input type="date"
+              id="adaptationDate"
+              required
+              class="w-full mt-1 p-3 text-sm">
 
           </div>
 
@@ -456,7 +458,10 @@
               Початок роботи
             </label>
 
-            <input type="date" id="startDate" required class="w-full mt-1 p-3 text-sm">
+            <input type="date"
+              id="startDate"
+              required
+              class="w-full mt-1 p-3 text-sm">
 
           </div>
 
@@ -470,7 +475,10 @@
               Дата звільнення
             </label>
 
-            <input type="date" id="dismissalDate" onchange="autoUpdateStatus()" class="w-full mt-1 p-3 text-sm">
+            <input type="date"
+              id="dismissalDate"
+              onchange="autoUpdateStatus()"
+              class="w-full mt-1 p-3 text-sm">
 
           </div>
 
@@ -484,7 +492,7 @@
               id="status"
               value="Активний"
               readonly
-              class="w-full mt-1 p-3 text-sm bg-opacity-20 text-green-400 font-bold">
+              class="w-full mt-1 p-3 text-sm text-green-400 font-bold">
 
           </div>
 
@@ -505,7 +513,7 @@
 
         <button type="submit"
           id="btn-submit"
-          class="w-full green-btn text-white font-bold py-3 px-4 transition text-sm shadow">
+          class="w-full main-btn text-white font-bold py-3 px-4 transition text-sm shadow">
 
           Зберегти картку
 
@@ -538,8 +546,10 @@ function logout() {
   window.location.href = 'login.html';
 }
 
+// ======================================
+// LOAD EMPLOYEES
+// ======================================
 async function loadEmployees() {
-
   const cachedData = localStorage.getItem('hr_employees_cache');
 
   if (cachedData) {
@@ -550,7 +560,6 @@ async function loadEmployees() {
   }
 
   try {
-
     const login = localStorage.getItem('hr_user');
     const password = localStorage.getItem('hr_pass');
 
@@ -563,102 +572,72 @@ async function loadEmployees() {
     const result = await response.json();
 
     if (result.success) {
-
       allEmployees = result.data || [];
-
-      localStorage.setItem(
-        'hr_employees_cache',
-        JSON.stringify(allEmployees)
-      );
-
+      localStorage.setItem('hr_employees_cache', JSON.stringify(allEmployees));
       renderTable();
-
     } else {
-
       localStorage.clear();
       window.location.href = 'login.html';
-
     }
-
   } catch (error) {
-
     console.error(error);
-
     if (!cachedData) {
       alert('Помилка завантаження');
     }
-
   }
 
   showLoading(false);
 }
 
+// ======================================
+// RENDER TABLE
+// ======================================
 function renderTable() {
-
   const tbody = document.getElementById('employees-table-body');
-
   tbody.innerHTML = '';
 
-  const searchQuery =
-    document.getElementById('search-input')
-    .value
-    .toLowerCase();
+  const searchQuery = document.getElementById('search-input').value.toLowerCase();
 
   const filtered = allEmployees.filter(emp => {
-
     if (currentFilter === 'Активні' && emp.status !== 'Активний') return false;
     if (currentFilter === 'Звільнені' && emp.status !== 'Звільнений') return false;
 
-    const matchesPib =
-      (emp.pib || '').toLowerCase().includes(searchQuery);
-
-    const matchesDept =
-      (emp.department || '').toLowerCase().includes(searchQuery);
+    const matchesPib = (emp.pib || '').toLowerCase().includes(searchQuery);
+    const matchesDept = (emp.department || '').toLowerCase().includes(searchQuery);
 
     return matchesPib || matchesDept;
-
   });
 
   if (filtered.length === 0) {
-
-    tbody.innerHTML =
-      `<tr>
+    tbody.innerHTML = `
+      <tr>
         <td colspan="5" class="px-4 py-8 text-center muted">
           Нікого не знайдено
         </td>
       </tr>`;
-
     return;
   }
 
   filtered.forEach(emp => {
 
     const folderBadge = emp.folderUrl
+      ? `<a href="${emp.folderUrl}" target="_blank" class="text-green-400 hover:text-blue-400 font-medium inline-flex items-center gap-1">📁 Документи</a>`
+      : `<span class="muted italic">Немає лінку</span>`;
 
-      ? `<a href="${emp.folderUrl}" target="_blank"
-            class="text-green-400 hover:text-blue-400 font-medium">
-            📁 Документи
-         </a>`
-
-      : `<span class="text-gray-500 italic">
-            Немає
-         </span>`;
-
-    const statusClass =
-      emp.status === 'Активний'
-      ? 'bg-green-500 bg-opacity-20 text-green-400'
-      : 'bg-red-500 bg-opacity-20 text-red-400';
+    const statusClass = emp.status === 'Активний'
+      ? 'bg-green-500 bg-opacity-10 text-green-400'
+      : 'bg-red-500 bg-opacity-10 text-red-400';
 
     tbody.innerHTML += `
-      <tr>
+      <tr class="transition">
 
-        <td class="px-4 py-3 font-bold text-white">
+        <td class="px-4 py-3 font-bold title-white">
           #${emp.id}
         </td>
 
         <td class="px-4 py-3">
 
-          <div class="font-semibold text-white">
+          <div class="font-semibold title-white">
             ${emp.pib}
           </div>
 
@@ -668,7 +647,7 @@ function renderTable() {
 
         </td>
 
-        <td class="px-4 py-3">
+        <td class="px-4 py-3 muted">
           ${emp.department}
         </td>
 
@@ -682,8 +661,7 @@ function renderTable() {
 
         <td class="px-4 py-3 space-x-3">
 
-          <button
-            onclick="editEmployee(${emp.id})"
+          <button onclick="editEmployee(${emp.id})"
             class="text-blue-400 hover:text-blue-300 font-medium">
 
             Редагувати
@@ -700,51 +678,139 @@ function renderTable() {
 }
 
 function changeFilter(status) {
-
   currentFilter = status;
 
   document.getElementById('tab-all').classList.remove('tab-active');
   document.getElementById('tab-active').classList.remove('tab-active');
   document.getElementById('tab-fired').classList.remove('tab-active');
 
-  if (status === 'Всі')
-    document.getElementById('tab-all').classList.add('tab-active');
-
-  if (status === 'Активні')
-    document.getElementById('tab-active').classList.add('tab-active');
-
-  if (status === 'Звільнені')
-    document.getElementById('tab-fired').classList.add('tab-active');
+  if (status === 'Всі') document.getElementById('tab-all').classList.add('tab-active');
+  if (status === 'Активні') document.getElementById('tab-active').classList.add('tab-active');
+  if (status === 'Звільнені') document.getElementById('tab-fired').classList.add('tab-active');
 
   renderTable();
 }
 
 function autoUpdateStatus() {
-
-  const dateVal =
-    document.getElementById('dismissalDate').value;
-
-  const statusField =
-    document.getElementById('status');
+  const dateVal = document.getElementById('dismissalDate').value;
+  const statusField = document.getElementById('status');
 
   if (dateVal) {
-
     statusField.value = 'Звільнений';
-
-    statusField.classList.remove('text-green-400');
-
+    statusField.classList.remove('text-green-600');
     statusField.classList.add('text-red-400');
-
   } else {
-
     statusField.value = 'Активний';
-
     statusField.classList.remove('text-red-400');
-
     statusField.classList.add('text-green-400');
   }
 }
+
+function editEmployee(id) {
+  const emp = allEmployees.find(e => e.id == id);
+
+  if (!emp) return;
+
+  document.getElementById('emp-id').value = emp.id;
+  document.getElementById('pib').value = emp.pib;
+  document.getElementById('department').value = emp.department;
+  document.getElementById('position').value = emp.position;
+  document.getElementById('adaptationDate').value = emp.adaptationDate;
+  document.getElementById('startDate').value = emp.startDate;
+  document.getElementById('dismissalDate').value = emp.dismissalDate;
+  document.getElementById('folderUrl').value = emp.folderUrl;
+
+  autoUpdateStatus();
+
+  document.getElementById('form-title').innerText = `Редагувати #${emp.id}`;
+  document.getElementById('btn-submit').innerText = 'Оновити дані працівника';
+
+  document.getElementById('btn-submit').classList.replace('bg-blue-600', 'bg-yellow-600');
+  document.getElementById('btn-submit').classList.replace('hover:bg-blue-700', 'hover:bg-yellow-700');
+
+  document.getElementById('btn-cancel-edit').classList.remove('hidden');
+}
+
+function resetForm() {
+
+  document.getElementById('employee-form').reset();
+
+  document.getElementById('emp-id').value = '';
+
+  autoUpdateStatus();
+
+  document.getElementById('form-title').innerText = 'Додати працівника';
+  document.getElementById('btn-submit').innerText = 'Зберегти картку';
+
+  document.getElementById('btn-submit').classList.replace('bg-yellow-600', 'bg-blue-600');
+  document.getElementById('btn-submit').classList.replace('hover:bg-yellow-700', 'hover:bg-blue-700');
+
+  document.getElementById('btn-cancel-edit').classList.add('hidden');
+}
+
+// ======================================
+// SUBMIT
+// ======================================
+async function submitForm(e) {
+
+  e.preventDefault();
+
+  showLoading(true);
+
+  const employeeData = {
+
+    action: 'addEmployee',
+
+    login: localStorage.getItem('hr_user'),
+    password: localStorage.getItem('hr_pass'),
+
+    id: document.getElementById('emp-id').value,
+    pib: document.getElementById('pib').value,
+    department: document.getElementById('department').value,
+    position: document.getElementById('position').value,
+    adaptationDate: document.getElementById('adaptationDate').value,
+    startDate: document.getElementById('startDate').value,
+    dismissalDate: document.getElementById('dismissalDate').value,
+    status: document.getElementById('status').value,
+    folderUrl: document.getElementById('folderUrl').value
+  };
+
+  try {
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(employeeData)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+
+      resetForm();
+
+      localStorage.removeItem('hr_employees_cache');
+
+      await loadEmployees();
+
+      alert('Дані успішно збережено!');
+
+    } else {
+
+      alert('Помилка: ' + result.error);
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert('Помилка звʼязку з сервером');
+  }
+
+  showLoading(false);
+}
 </script>
+
+</div>
 
 </body>
 </html>
