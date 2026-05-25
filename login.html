@@ -100,6 +100,8 @@ async function handleLogin() {
     const result = await response.json();
 
     if (result.success) {
+      localStorage.setItem('hr_login', login);
+localStorage.setItem('hr_password', password);
 
       localStorage.setItem('hr_user', result.name);
       localStorage.setItem('hr_role', result.role);
