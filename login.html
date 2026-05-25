@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>HR Portal | Login</title>
+  <title>HR Portal</title>
 
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -24,7 +24,7 @@
       </h1>
 
       <p class="text-gray-400 mt-2">
-        Авторизація в системі
+        Авторизація
       </p>
 
     </div>
@@ -32,9 +32,16 @@
     <div class="space-y-5">
 
       <input
+        type="text"
+        id="login"
+        placeholder="Логін"
+        class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+
+      <input
         type="password"
         id="password"
-        placeholder="Введіть пароль"
+        placeholder="Пароль"
         class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
 
@@ -49,8 +56,7 @@
       <div
         id="errorBox"
         class="hidden bg-red-500/20 border border-red-500 text-red-300 text-sm p-3 rounded-xl"
-      >
-      </div>
+      ></div>
 
     </div>
 
@@ -58,17 +64,19 @@
 
 <script>
 
-const API_URL = 'ТУТ_ВСТАВ_СВІЙ_GOOGLE_SCRIPT_URL';
+const API_URL = 'ТУТ_ТВІЙ_GOOGLE_SCRIPT_URL';
 
 async function handleLogin() {
 
+  const login = document.getElementById('login').value;
   const password = document.getElementById('password').value;
+
   const button = document.getElementById('loginBtn');
 
   hideError();
 
-  if (!password) {
-    showError('Введіть пароль');
+  if (!login || !password) {
+    showError('Заповніть всі поля');
     return;
   }
 
@@ -83,6 +91,8 @@ async function handleLogin() {
         'Content-Type': 'text/plain'
       },
       body: JSON.stringify({
+        action: 'login',
+        login: login,
         password: password
       })
     });
@@ -91,20 +101,23 @@ async function handleLogin() {
 
     if (result.success) {
 
-      localStorage.setItem('hr_pass', password);
+      localStorage.setItem('hr_user', result.name);
       localStorage.setItem('hr_role', result.role);
+      localStorage.setItem('hr_user_id', result.id);
+      localStorage.setItem('hr_logged', 'true');
 
       window.location.href = 'index.html';
 
     } else {
 
-      showError('Невірний пароль');
+      showError('Невірний логін або пароль');
 
     }
 
   } catch (e) {
 
     console.error(e);
+
     showError('Помилка сервера');
 
   }
@@ -114,25 +127,28 @@ async function handleLogin() {
 }
 
 function showError(text) {
+
   const box = document.getElementById('errorBox');
 
   box.innerText = text;
+
   box.classList.remove('hidden');
 }
 
 function hideError() {
-  document.getElementById('errorBox').classList.add('hidden');
+
+  document
+    .getElementById('errorBox')
+    .classList.add('hidden');
 }
 
-document
-  .getElementById('password')
-  .addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function(e) {
 
-    if (e.key === 'Enter') {
-      handleLogin();
-    }
+  if (e.key === 'Enter') {
+    handleLogin();
+  }
 
-  });
+});
 
 </script>
 
