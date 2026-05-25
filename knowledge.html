@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>База Знань</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="bg-gray-50 font-sans p-6">
 
-  <div class="max-w-7xl mx-auto">
+  <div class="max-w-7xl mx-auto relative">
     
     <nav class="flex gap-4 mb-8 bg-white p-2 rounded-lg shadow-sm w-fit">
       <a href="index.html" class="px-4 py-2 font-medium text-gray-600 hover:bg-gray-100 rounded-md">База працівників</a>
@@ -58,25 +59,76 @@
           </button>
         </form>
       </div>
+    </div>
+  </div>
 
+  <div id="doc-modal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-75 flex justify-center items-center p-4 sm:p-6 backdrop-filter backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-full max-h-[90vh] flex flex-col overflow-hidden">
+      
+      <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <h3 id="modal-title" class="text-xl font-bold text-gray-800 truncate pr-4">Назва документа</h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition focus:outline-none">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+      
+      <div class="flex-grow w-full relative bg-gray-100">
+        <div id="iframe-loading" class="absolute inset-0 flex flex-col justify-center items-center text-blue-500">
+          <i class="fas fa-circle-notch fa-spin text-4xl mb-3"></i>
+          <p class="font-medium">Завантаження документа...</p>
+        </div>
+        <iframe id="doc-iframe" class="w-full h-full border-0 relative z-10" src=""></iframe>
+      </div>
+      
     </div>
   </div>
 
   <script>
-    // ВАШ API ЛІНК
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
+    // ВАШ API ЛІНК (УВАГА: перевірте, чи тут стоїть той самий лінк, що і в index.html)
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxsGtukUdGv3jyAxlOQzV-ES3k_Ze5IvkwWGfowYF51ztVjOy4I4mgjDAXdMOvbjno0uQ/exec';
 
     window.onload = function() {
       loadKnowledge();
     };
 
-    // Завантажуємо дані
+    // --- ФУНКЦІЇ ДЛЯ МОДАЛЬНОГО ВІКНА ---
+    
+    // Перетворюємо лінк на режим читання (без панелей Google Docs)
+    function getPreviewUrl(url) {
+      if (!url) return '';
+      if (url.includes('docs.google.com') && url.includes('/edit')) {
+        return url.replace(/\/edit.*$/, '/preview');
+      }
+      return url;
+    }
+
+    function openModal(url, title) {
+      document.getElementById('modal-title').innerText = title;
+      // Вставляємо лінк у iframe
+      document.getElementById('doc-iframe').src = getPreviewUrl(url);
+      // Показуємо модалку
+      document.getElementById('doc-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('doc-modal').classList.add('hidden');
+      // Очищаємо iframe, щоб відео/документ не продовжували вантажитись у фоні
+      document.getElementById('doc-iframe').src = ''; 
+    }
+
+    // Закриття модалки по кліку на темний фон
+    document.getElementById('doc-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeModal();
+      }
+    });
+    // ------------------------------------
+
     async function loadKnowledge() {
       document.getElementById('loading').style.display = 'block';
       const container = document.getElementById('kb-container');
       
       try {
-        // Запит до Apps Script з параметром action=getKnowledge
         const response = await fetch(API_URL + '?action=getKnowledge');
         const data = await response.json();
         
@@ -85,10 +137,12 @@
         if (data.length === 0) {
           container.innerHTML = '<div class="col-span-2 p-8 text-center text-gray-500 bg-white rounded-lg shadow">База знань поки порожня. Додайте першу статтю!</div>';
         } else {
-          // Малюємо картки
           data.forEach(item => {
-            // Перевіряємо, щоб не було порожніх карток
             if(item['Назва статті']) {
+              // Екрануємо лапки, щоб вони не зламали HTML код кнопки
+              const safeTitle = item['Назва статті'].replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+              const safeUrl = item['Посилання на Google Doc'];
+
               container.innerHTML += `
                 <div class="bg-white p-5 rounded-lg shadow border border-gray-100 hover:shadow-md transition flex flex-col">
                   <div class="text-xs font-bold text-blue-600 mb-1 uppercase tracking-wide">${item['Категорія'] || 'Інше'}</div>
@@ -97,9 +151,11 @@
                   
                   <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
                     <span class="text-xs text-gray-400 font-medium"><i class="fas fa-user mr-1"></i>${item['Автор (хто додав)'] || 'Адмін'}</span>
-                    <a href="${item['Посилання на Google Doc']}" target="_blank" class="text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-100 font-semibold transition">
-                      Читати документ &rarr;
-                    </a>
+                    
+                    <button onclick="openModal('${safeUrl}', '${safeTitle}')" class="text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-100 font-semibold transition flex items-center gap-2">
+                      <i class="fas fa-book-open"></i> Читати
+                    </button>
+                    
                   </div>
                 </div>
               `;
@@ -114,19 +170,17 @@
       document.getElementById('loading').style.display = 'none';
     }
 
-    // Відправляємо нову статтю в таблицю
     async function submitKbForm(e) {
       e.preventDefault();
       document.getElementById('loading').style.display = 'block';
       
-      // Збираємо дані, action: 'addKnowledge' каже скрипту куди це писати
       const payload = {
         action: 'addKnowledge',
         title: document.getElementById('kb-title').value,
         category: document.getElementById('kb-category').value,
         description: document.getElementById('kb-desc').value,
         docUrl: document.getElementById('kb-url').value,
-        author: 'Співробітник' // Тут можна в майбутньому зробити поле імені
+        author: 'Співробітник'
       };
 
       try {
@@ -139,7 +193,7 @@
         
         if (result.success) {
           document.getElementById('kb-form').reset();
-          await loadKnowledge(); // Оновлюємо сторінку після збереження
+          await loadKnowledge(); 
           alert('Статтю успішно додано до Бази Знань!');
         } else {
           alert('Помилка при збереженні: ' + (result.error || 'Невідома помилка'));
