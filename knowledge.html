@@ -159,22 +159,40 @@
       if (e.target === this) closeModal();
     });
 
-    // Завантаження даних з сервера
+    // Завантаження даних з сервера (з кешуванням)
     async function loadKnowledge() {
-      document.getElementById('loading').classList.remove('hidden');
+      const container = document.getElementById('kb-container');
       
+      // 1. СПРОБА ВЗЯТИ ДАНІ З ПАМ'ЯТІ (КЕШУ)
+      const cachedData = localStorage.getItem('hr_knowledge_cache');
+      if (cachedData) {
+        allKnowledge = JSON.parse(cachedData);
+        renderKnowledge(); // Малюємо миттєво!
+      } else {
+        // Якщо кешу немає (перший захід), показуємо лоадер
+        document.getElementById('loading').classList.remove('hidden');
+      }
+      
+      // 2. ФОНОВИЙ ЗАПИТ ДО GOOGLE (щоб отримати найсвіжіші дані)
       try {
         const response = await fetch(API_URL + '?action=getKnowledge');
-        allKnowledge = await response.json();
+        const freshData = await response.json();
         
-        // Викликаємо функцію малювання після завантаження
-        renderKnowledge();
+        // Оновлюємо глобальну змінну і зберігаємо в пам'ять браузера
+        allKnowledge = freshData;
+        localStorage.setItem('hr_knowledge_cache', JSON.stringify(freshData));
+        
+        // Відмальовуємо заново свіжими даними (непомітно для ока)
+        renderKnowledge(); 
         
       } catch (error) {
         console.error('Error:', error);
-        document.getElementById('kb-container').innerHTML = '<div class="col-span-2 text-center text-red-500 p-10 bg-white rounded-2xl">Помилка завантаження даних. Перевірте API_URL.</div>';
+        if (!cachedData) {
+          container.innerHTML = '<div class="col-span-2 text-center text-red-500 p-10 bg-white rounded-2xl">Помилка завантаження даних. Перевірте API_URL.</div>';
+        }
       }
       
+      // Ховаємо лоадер
       document.getElementById('loading').classList.add('hidden');
     }
 
@@ -188,7 +206,7 @@
       
       // Фільтруємо масив
       const filteredData = allKnowledge.filter(item => {
-        if (!item['Назва статті']) return false; // Пропускаємо пусті рядки
+        if (!item['Назва статті']) return false; 
         
         const title = (item['Назва статті'] || '').toLowerCase();
         const category = (item['Категорія'] || '').toLowerCase();
@@ -269,7 +287,11 @@
         
         if (result.success) {
           document.getElementById('kb-form').reset();
-          await loadKnowledge(); // Це перезавантажить дані і відмалює картки заново
+          
+          // Одразу видаляємо старий кеш, щоб примусово стягнути свіже
+          localStorage.removeItem('hr_knowledge_cache'); 
+          
+          await loadKnowledge(); 
           alert('Чудово! Статтю додано до бази знань.');
         } else {
           alert('Помилка: ' + (result.error || 'Невідома помилка'));
