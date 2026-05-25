@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.min.css">
+</head>
+<body>
+  <div class="container">
+    <h2>База знань</h2>
+    <div id="content">Завантаження...</div>
+  </div>
+
+  <script>
+    // Отримуємо дані з нашої нової функції в Code.gs
+    google.script.run.withSuccessHandler(showData).getKnowledgeContent();
+
+    function showData(jsonString) {
+      const data = JSON.parse(jsonString);
+      let html = '<div class="row">';
+      
+      data.forEach(item => {
+        html += `
+          <div class="column column-50">
+            <h3>${item['Назва статті']}</h3>
+            <p>${item['Короткий опис']}</p>
+            <a href="${item['Посилання на Doc']}" target="_blank" class="button">Редагувати в Google Docs</a>
+          </div>`;
+      });
+      
+      html += '</div>';
+      document.getElementById('content').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
