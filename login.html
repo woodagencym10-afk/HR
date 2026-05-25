@@ -8,23 +8,19 @@
     <input type="text" id="login" placeholder="Логін">
     <input type="password" id="password" placeholder="Пароль">
     <button onclick="handleLogin()">УВІЙТИ</button>
-
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
-
+        
         async function handleLogin() {
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
-
+            
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'login', login: login, password: password })
                 });
-
                 const result = await response.json();
-
                 if (result.success) {
                     localStorage.setItem('hr_user', login);
                     localStorage.setItem('hr_pass', password);
