@@ -3,129 +3,159 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>База Знань</title>
+  <title>База Знань | HR Portal</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-50 font-sans p-6">
-
-  <div class="max-w-7xl mx-auto relative">
+  <style>
+    /* Ефект паперу для документа */
+    #doc-iframe {
+      background-color: white;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      border: 1px solid #e2e8f0;
+    }
+    /* Гарний скролбар */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     
-    <nav class="flex gap-4 mb-8 bg-white p-2 rounded-lg shadow-sm w-fit">
-      <a href="index.html" class="px-4 py-2 font-medium text-gray-600 hover:bg-gray-100 rounded-md">База працівників</a>
-      <a href="knowledge.html" class="px-4 py-2 font-bold bg-blue-100 text-blue-700 rounded-md">База знань</a>
+    .modal-backdrop {
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans p-6 text-gray-900">
+
+  <div class="max-w-7xl mx-auto">
+    
+    <nav class="flex gap-4 mb-8 bg-white p-2 rounded-xl shadow-sm w-fit border border-gray-100">
+      <a href="index.html" class="px-5 py-2 font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
+        <i class="fas fa-users mr-2"></i>База працівників
+      </a>
+      <a href="knowledge.html" class="px-5 py-2 font-bold bg-blue-600 text-white rounded-lg shadow-md transition">
+        <i class="fas fa-book mr-2"></i>База знань
+      </a>
     </nav>
 
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">База Знань (Інструкції та Регламенти)</h1>
-      <div id="loading" class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded animate-pulse" style="display: none;">
-        Завантаження даних...
+    <div class="flex justify-between items-center mb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold text-gray-900">База Знань</h1>
+        <p class="text-gray-500 mt-1">Централізований доступ до всіх інструкцій та регламентів компанії</p>
+      </div>
+      <div id="loading" class="hidden flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-100 animate-pulse">
+        <i class="fas fa-sync-alt fa-spin mr-2"></i> Оновлення даних...
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <div class="lg:col-span-2">
-        <div id="kb-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-           </div>
+        <div id="kb-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow h-fit sticky top-6">
-        <h2 class="text-xl font-semibold text-gray-700 mb-4">Додати статтю</h2>
-        <form id="kb-form" onsubmit="submitKbForm(event)" class="space-y-4">
+      <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-fit sticky top-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+          <i class="fas fa-plus-circle text-blue-600 mr-2"></i> Додати статтю
+        </h2>
+        <form id="kb-form" onsubmit="submitKbForm(event)" class="space-y-5">
           
           <div>
-            <label class="block text-xs font-semibold uppercase text-gray-500">Назва статті</label>
-            <input type="text" id="kb-title" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Назва статті</label>
+            <input type="text" id="kb-title" required placeholder="Наприклад: Правила CRM" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
           </div>
           
           <div>
-            <label class="block text-xs font-semibold uppercase text-gray-500">Категорія (Відділ / Тема)</label>
-            <input type="text" id="kb-category" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Категорія</label>
+            <input type="text" id="kb-category" required placeholder="Відділ або Тема" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
           </div>
           
           <div>
-            <label class="block text-xs font-semibold uppercase text-gray-500">Короткий опис</label>
-            <textarea id="kb-desc" rows="3" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"></textarea>
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Короткий опис</label>
+            <textarea id="kb-desc" rows="3" required placeholder="Про що ця інструкція?" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"></textarea>
           </div>
           
           <div>
-            <label class="block text-xs font-semibold uppercase text-gray-500">Посилання на Google Doc</label>
-            <input type="url" id="kb-url" required placeholder="https://docs.google.com/..." class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Посилання на Google Doc</label>
+            <div class="relative">
+               <i class="fab fa-google-drive absolute left-3 top-3.5 text-gray-300"></i>
+               <input type="url" id="kb-url" required placeholder="https://docs.google.com/..." class="w-full p-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
+            </div>
           </div>
           
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition text-sm shadow">
-            Зберегти в базу знань
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg transform hover:-translate-y-0.5">
+            Зберегти статтю
           </button>
         </form>
       </div>
+
     </div>
   </div>
 
-  <div id="doc-modal" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-75 flex justify-center items-center p-4 sm:p-6 backdrop-filter backdrop-blur-sm transition-opacity">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-full max-h-[90vh] flex flex-col overflow-hidden">
+  <div id="doc-modal" class="fixed inset-0 z-50 hidden modal-backdrop bg-gray-900 bg-opacity-60 flex justify-center items-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-full max-h-[92vh] flex flex-col overflow-hidden animate-modal">
       
-      <div class="flex justify-between items-center px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <h3 id="modal-title" class="text-xl font-bold text-gray-800 truncate pr-4">Назва документа</h3>
-        <button onclick="closeModal()" class="text-gray-400 hover:text-red-500 transition focus:outline-none">
-          <i class="fas fa-times text-2xl"></i>
+      <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white">
+        <div class="flex items-center">
+          <i class="fas fa-file-alt text-blue-600 text-xl mr-3"></i>
+          <h3 id="modal-title" class="text-xl font-extrabold text-gray-800 truncate max-w-lg">Назва документа</h3>
+        </div>
+        <button onclick="closeModal()" class="bg-gray-100 hover:bg-red-50 text-gray-400 hover:text-red-500 p-2 rounded-full transition outline-none">
+          <i class="fas fa-times text-xl"></i>
         </button>
       </div>
       
-      <div class="flex-grow w-full relative bg-gray-100">
-        <div id="iframe-loading" class="absolute inset-0 flex flex-col justify-center items-center text-blue-500">
-          <i class="fas fa-circle-notch fa-spin text-4xl mb-3"></i>
-          <p class="font-medium">Завантаження документа...</p>
+      <div class="flex-grow w-full relative bg-gray-200 p-3 md:p-6 overflow-hidden">
+        <div id="iframe-loading" class="absolute inset-0 flex flex-col justify-center items-center text-blue-600 z-0">
+          <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
+          <p class="font-bold">Відкриваємо документ...</p>
         </div>
-        <iframe id="doc-iframe" class="w-full h-full border-0 relative z-10" src=""></iframe>
+        <iframe id="doc-iframe" class="w-full h-full rounded-lg relative z-10" src=""></iframe>
       </div>
       
     </div>
   </div>
 
   <script>
-    // ВАШ API ЛІНК (УВАГА: перевірте, чи тут стоїть той самий лінк, що і в index.html)
+    // === ВСТАВ СВОЄ ПОСИЛАННЯ ТУТ ===
     const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
 
     window.onload = function() {
       loadKnowledge();
     };
 
-    // --- ФУНКЦІЇ ДЛЯ МОДАЛЬНОГО ВІКНА ---
-    
-    // Перетворюємо лінк на режим читання (без панелей Google Docs)
+    // Очищення посилання для "чистого" вигляду читання
     function getPreviewUrl(url) {
       if (!url) return '';
       if (url.includes('docs.google.com') && url.includes('/edit')) {
-        return url.replace(/\/edit.*$/, '/preview');
+        // Замінюємо /edit на /preview?rm=minimal для красивого рідера
+        return url.replace(/\/edit.*$/, '/preview?rm=minimal');
       }
       return url;
     }
 
     function openModal(url, title) {
       document.getElementById('modal-title').innerText = title;
-      // Вставляємо лінк у iframe
+      document.getElementById('iframe-loading').style.display = 'flex';
       document.getElementById('doc-iframe').src = getPreviewUrl(url);
-      // Показуємо модалку
       document.getElementById('doc-modal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // Забороняємо скрол фону
     }
 
     function closeModal() {
       document.getElementById('doc-modal').classList.add('hidden');
-      // Очищаємо iframe, щоб відео/документ не продовжували вантажитись у фоні
       document.getElementById('doc-iframe').src = ''; 
+      document.body.style.overflow = 'auto'; // Повертаємо скрол
     }
 
-    // Закриття модалки по кліку на темний фон
+    // Закриття по кліку поза вікном
     document.getElementById('doc-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeModal();
-      }
+      if (e.target === this) closeModal();
     });
-    // ------------------------------------
 
+    // Завантаження даних
     async function loadKnowledge() {
-      document.getElementById('loading').style.display = 'block';
+      document.getElementById('loading').classList.remove('hidden');
       const container = document.getElementById('kb-container');
       
       try {
@@ -134,28 +164,39 @@
         
         container.innerHTML = '';
         
-        if (data.length === 0) {
-          container.innerHTML = '<div class="col-span-2 p-8 text-center text-gray-500 bg-white rounded-lg shadow">База знань поки порожня. Додайте першу статтю!</div>';
+        if (!data || data.length === 0) {
+          container.innerHTML = `
+            <div class="col-span-2 p-12 text-center bg-white rounded-3xl border-2 border-dashed border-gray-200">
+              <i class="fas fa-folder-open text-gray-200 text-6xl mb-4"></i>
+              <p class="text-gray-400 font-medium text-lg">Поки що жодних інструкцій немає</p>
+            </div>`;
         } else {
           data.forEach(item => {
             if(item['Назва статті']) {
-              // Екрануємо лапки, щоб вони не зламали HTML код кнопки
-              const safeTitle = item['Назва статті'].replace(/'/g, "&apos;").replace(/"/g, "&quot;");
+              const safeTitle = item['Назва статті'].replace(/'/g, "\\'").replace(/"/g, "&quot;");
               const safeUrl = item['Посилання на Google Doc'];
 
               container.innerHTML += `
-                <div class="bg-white p-5 rounded-lg shadow border border-gray-100 hover:shadow-md transition flex flex-col">
-                  <div class="text-xs font-bold text-blue-600 mb-1 uppercase tracking-wide">${item['Категорія'] || 'Інше'}</div>
-                  <h3 class="text-lg font-bold text-gray-800 mb-2">${item['Назва статті']}</h3>
-                  <p class="text-sm text-gray-600 mb-4 flex-grow">${item['Короткий опис'] || ''}</p>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
+                  <div class="flex justify-between items-start mb-4">
+                    <span class="bg-blue-50 text-blue-600 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100">
+                      ${item['Категорія'] || 'Інше'}
+                    </span>
+                  </div>
+                  <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition">${item['Назва статті']}</h3>
+                  <p class="text-sm text-gray-500 mb-6 flex-grow leading-relaxed">${item['Короткий опис'] || ''}</p>
                   
-                  <div class="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
-                    <span class="text-xs text-gray-400 font-medium"><i class="fas fa-user mr-1"></i>${item['Автор (хто додав)'] || 'Адмін'}</span>
+                  <div class="flex justify-between items-center pt-5 border-t border-gray-50">
+                    <div class="flex items-center text-gray-400">
+                      <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center mr-2">
+                        <i class="fas fa-user text-[10px]"></i>
+                      </div>
+                      <span class="text-xs font-semibold">${item['Автор (хто додав)'] || 'Admin'}</span>
+                    </div>
                     
-                    <button onclick="openModal('${safeUrl}', '${safeTitle}')" class="text-sm bg-blue-50 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-100 font-semibold transition flex items-center gap-2">
-                      <i class="fas fa-book-open"></i> Читати
+                    <button onclick="openModal('${safeUrl}', '${safeTitle}')" class="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-600 transition flex items-center gap-2 shadow-sm">
+                      <i class="fas fa-book-open"></i> ЧИТАТИ
                     </button>
-                    
                   </div>
                 </div>
               `;
@@ -163,16 +204,17 @@
           });
         }
       } catch (error) {
-        console.error('Помилка завантаження:', error);
-        container.innerHTML = '<div class="col-span-2 p-8 text-center text-red-500 bg-white rounded-lg shadow">Помилка з\'єднання з таблицею.</div>';
+        console.error('Error:', error);
+        container.innerHTML = '<div class="col-span-2 text-center text-red-500 p-10 bg-white rounded-2xl">Помилка завантаження даних. Перевірте API_URL.</div>';
       }
       
-      document.getElementById('loading').style.display = 'none';
+      document.getElementById('loading').classList.add('hidden');
     }
 
+    // Збереження статті
     async function submitKbForm(e) {
       e.preventDefault();
-      document.getElementById('loading').style.display = 'block';
+      document.getElementById('loading').classList.remove('hidden');
       
       const payload = {
         action: 'addKnowledge',
@@ -180,7 +222,7 @@
         category: document.getElementById('kb-category').value,
         description: document.getElementById('kb-desc').value,
         docUrl: document.getElementById('kb-url').value,
-        author: 'Співробітник'
+        author: 'Команда HR'
       };
 
       try {
@@ -193,17 +235,17 @@
         
         if (result.success) {
           document.getElementById('kb-form').reset();
-          await loadKnowledge(); 
-          alert('Статтю успішно додано до Бази Знань!');
+          await loadKnowledge();
+          alert('Чудово! Статтю додано до бази знань.');
         } else {
-          alert('Помилка при збереженні: ' + (result.error || 'Невідома помилка'));
+          alert('Помилка: ' + (result.error || 'Невідома помилка'));
         }
       } catch (error) {
-        console.error('Помилка відправки:', error);
-        alert('Помилка зв\'язку. Перевірте консоль.');
+        console.error('Error:', error);
+        alert('Помилка зв\'язку з сервером.');
       }
       
-      document.getElementById('loading').style.display = 'none';
+      document.getElementById('loading').classList.add('hidden');
     }
   </script>
 </body>
