@@ -1,38 +1,394 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>Вхід</title>
-</head>
-<body>
-    <input type="text" id="login" placeholder="Логін">
-    <input type="password" id="password" placeholder="Пароль">
-    <button onclick="handleLogin()">УВІЙТИ</button>
-    <script>
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        async function handleLogin() {
-            const login = document.getElementById('login').value;
-            const password = document.getElementById('password').value;
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'login', login: login, password: password })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    localStorage.setItem('hr_user', login);
-                    localStorage.setItem('hr_pass', password);
-                    localStorage.setItem('hr_role', result.role);
-                    localStorage.setItem('hr_logged', 'true'); // ← ДОДАНО
-                    window.location.href = result.role === 'user' ? 'knowledge.html' : 'index.html';
-                } else {
-                    alert('Помилка: ' + (result.error || 'Невірний логін або пароль'));
-                }
-            } catch(e) {
-                alert('Помилка сервера: ' + e);
-            }
+<title>Management System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Inter',sans-serif;
+
+    height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    overflow:hidden;
+
+    background:
+        radial-gradient(circle at top left, rgba(34,197,94,0.06), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(37,99,235,0.08), transparent 35%),
+        linear-gradient(145deg,#020617,#07110f,#08131c);
+
+    position:relative;
+}
+
+/* ФОНОВІ ЛІНІЇ */
+
+.lines{
+
+    position:absolute;
+    inset:0;
+
+    background-image:
+
+        linear-gradient(
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,0.025) 1px,
+            transparent 1px
+        );
+
+    background-size:60px 60px;
+
+    opacity:0.7;
+
+    mask-image:
+        radial-gradient(circle at center, black 45%, transparent 100%);
+}
+
+/* GLOW */
+
+body::before{
+
+    content:'';
+
+    position:absolute;
+
+    width:700px;
+    height:700px;
+
+    background:rgba(34,197,94,0.05);
+
+    border-radius:50%;
+
+    filter:blur(120px);
+
+    top:-300px;
+    left:-250px;
+}
+
+body::after{
+
+    content:'';
+
+    position:absolute;
+
+    width:700px;
+    height:700px;
+
+    background:rgba(37,99,235,0.05);
+
+    border-radius:50%;
+
+    filter:blur(120px);
+
+    bottom:-350px;
+    right:-250px;
+}
+
+/* LOGIN BOX */
+
+.login-box{
+
+    position:relative;
+
+    width:100%;
+    max-width:430px;
+
+    padding:54px 42px;
+
+    border-radius:32px;
+
+    background:rgba(7,15,13,0.82);
+
+    backdrop-filter:blur(22px);
+
+    border:1px solid rgba(255,255,255,0.06);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.55),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+
+    z-index:5;
+}
+
+/* BORDER */
+
+.login-box::before{
+
+    content:'';
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:32px;
+
+    padding:1px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34,197,94,0.18),
+            rgba(59,130,246,0.12),
+            rgba(255,255,255,0.02)
+        );
+
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+
+    -webkit-mask-composite:xor;
+            mask-composite:exclude;
+
+    pointer-events:none;
+}
+
+/* TITLE */
+
+.system{
+
+    text-align:center;
+
+    font-size:13px;
+    font-weight:600;
+
+    letter-spacing:4px;
+
+    text-transform:uppercase;
+
+    color:rgba(255,255,255,0.35);
+
+    margin-bottom:40px;
+}
+
+/* INPUTS */
+
+.input-group{
+    margin-bottom:18px;
+}
+
+.input-group input{
+
+    width:100%;
+    height:60px;
+
+    border:none;
+    outline:none;
+
+    border-radius:18px;
+
+    padding:0 20px;
+
+    background:rgba(255,255,255,0.03);
+
+    border:1px solid rgba(255,255,255,0.05);
+
+    color:white;
+
+    font-size:15px;
+
+    transition:0.25s;
+}
+
+.input-group input::placeholder{
+    color:rgba(255,255,255,0.28);
+}
+
+.input-group input:focus{
+
+    background:rgba(255,255,255,0.05);
+
+    border-color:rgba(34,197,94,0.30);
+
+    box-shadow:
+        0 0 0 5px rgba(34,197,94,0.06);
+}
+
+/* BUTTON */
+
+.login-btn{
+
+    width:100%;
+    height:60px;
+
+    border:none;
+
+    border-radius:18px;
+
+    margin-top:8px;
+
+    background:
+        linear-gradient(145deg,#166534,#2563eb);
+
+    color:white;
+
+    font-size:15px;
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.login-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 15px 35px rgba(37,99,235,0.20);
+}
+
+/* FOOTER */
+
+.footer{
+
+    text-align:center;
+
+    margin-top:26px;
+
+    color:rgba(255,255,255,0.16);
+
+    font-size:11px;
+
+    letter-spacing:2px;
+}
+
+/* MOBILE */
+
+@media(max-width:500px){
+
+    .login-box{
+
+        margin:20px;
+
+        padding:44px 26px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="lines"></div>
+
+<div class="login-box">
+
+    <div class="system">
+        MANAGEMENT SYSTEM
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="login" placeholder="Логін">
+    </div>
+
+    <div class="input-group">
+        <input type="password" id="password" placeholder="Пароль">
+    </div>
+
+    <button class="login-btn" onclick="handleLogin()">
+        УВІЙТИ
+    </button>
+
+    <div class="footer">
+        HR MANAGEMENT SYSTEM
+    </div>
+
+</div>
+
+<script>
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
+
+async function handleLogin() {
+
+    const login = document.getElementById('login').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!login || !password) {
+
+        alert('Заповніть всі поля');
+        return;
+    }
+
+    try {
+
+        const response = await fetch(API_URL, {
+
+            method: 'POST',
+
+            body: JSON.stringify({
+
+                action: 'login',
+                login: login,
+                password: password
+
+            })
+
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+            localStorage.setItem('hr_user', login);
+            localStorage.setItem('hr_pass', password);
+            localStorage.setItem('hr_role', result.role);
+            localStorage.setItem('hr_logged', 'true');
+
+            window.location.href =
+                result.role === 'user'
+                ? 'knowledge.html'
+                : 'index.html';
+
+        } else {
+
+            alert(
+                'Помилка: ' +
+                (result.error || 'Невірний логін або пароль')
+            );
+
         }
-    </script>
+
+    } catch(e) {
+
+        alert('Помилка сервера: ' + e);
+
+    }
+
+}
+
+document.addEventListener('keydown', function(e) {
+
+    if (e.key === 'Enter') {
+
+        handleLogin();
+    }
+
+});
+
+</script>
+
 </body>
 </html>
