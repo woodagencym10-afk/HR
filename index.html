@@ -121,6 +121,16 @@
   </div>
 
   <script>
+    // Перевірка на кожній сторінці: якщо немає пароля, відправити на логін
+if (!localStorage.getItem('hr_pass')) {
+  window.location.href = 'login.html';
+}
+
+// Додатково: якщо юзер не Admin, можна ховати кнопки редагування
+const userRole = localStorage.getItem('hr_role');
+if (userRole === 'user' && window.location.pathname.includes('index.html')) {
+  // Тут код, який ховає кнопки (наприклад, document.getElementById('employee-form').style.display = 'none')
+}
     // ВАШ API ЛІНК
     const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
     
