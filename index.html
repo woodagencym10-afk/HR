@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>База Працівників</title>
-
   <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
   <style>
     .tab-active {
       border-bottom: 2px solid #2563eb;
@@ -20,12 +18,10 @@
 <body class="bg-gray-50 font-sans p-6">
 
 <script>
-
-  // AUTH CHECK
+  // AUTH CHECK — виправлено: перевіряємо hr_logged
   if (!localStorage.getItem('hr_logged')) {
     window.location.href = 'login.html';
   }
-
 </script>
 
 <div class="max-w-7xl mx-auto">
@@ -34,89 +30,41 @@
     <a href="index.html" class="px-4 py-2 font-bold bg-blue-100 text-blue-700 rounded-md">
       База працівників
     </a>
-
     <a href="knowledge.html" class="px-4 py-2 font-medium text-gray-600 hover:bg-gray-100 rounded-md">
       База знань
     </a>
+    <button onclick="logout()" class="px-4 py-2 font-medium text-red-500 hover:bg-red-50 rounded-md">
+      Вийти
+    </button>
   </nav>
 
   <div class="flex justify-between items-center mb-6">
-
-    <h1 class="text-3xl font-bold text-gray-800">
-      Картки обліку працівників
-    </h1>
-
-    <div
-      id="loading"
-      class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded animate-pulse"
-      style="display:none;"
-    >
-      <i class="fas fa-sync-alt fa-spin mr-1"></i>
-      Оновлення даних...
+    <h1 class="text-3xl font-bold text-gray-800">Картки обліку працівників</h1>
+    <div id="loading" class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded animate-pulse" style="display:none;">
+      <i class="fas fa-sync-alt fa-spin mr-1"></i> Оновлення даних...
     </div>
-
   </div>
 
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-200 mb-6 pb-2">
-
     <div class="flex space-x-6">
-
-      <button
-        onclick="changeFilter('Активні')"
-        id="tab-active"
-        class="py-2 px-1 text-gray-600 hover:text-blue-600 focus:outline-none font-medium tab-active"
-      >
-        Активні
-      </button>
-
-      <button
-        onclick="changeFilter('Звільнені')"
-        id="tab-fired"
-        class="py-2 px-1 text-gray-600 hover:text-blue-600 focus:outline-none font-medium"
-      >
-        Звільнені
-      </button>
-
-      <button
-        onclick="changeFilter('Всі')"
-        id="tab-all"
-        class="py-2 px-1 text-gray-600 hover:text-blue-600 focus:outline-none font-medium"
-      >
-        Всі
-      </button>
-
+      <button onclick="changeFilter('Активні')" id="tab-active" class="py-2 px-1 text-gray-600 hover:text-blue-600 focus:outline-none font-medium tab-active">Активні</button>
+      <button onclick="changeFilter('Звільнені')" id="tab-fired" class="py-2 px-1 text-gray-600 hover:text-blue-600 focus:outline-none font-medium">Звільнені</button>
+      <button onclick="changeFilter('Всі')" id="tab-all" class="py-2 px-1 text-gray-600 hover:text-blue-600 focus:outline-none font-medium">Всі</button>
     </div>
-
     <div class="w-full md:w-72">
-
-      <input
-        type="text"
-        id="search-input"
-        oninput="renderTable()"
-        placeholder="Пошук за ПІБ або відділом..."
-        class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-      >
-
+      <input type="text" id="search-input" oninput="renderTable()" placeholder="Пошук за ПІБ або відділом..."
+        class="w-full p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
     </div>
-
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
     <!-- TABLE -->
-
     <div class="lg:col-span-2 bg-white p-4 rounded-lg shadow overflow-hidden">
-
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">
-        База співробітників
-      </h2>
-
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">База співробітників</h2>
       <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
-
         <table class="min-w-full divide-y divide-gray-200">
-
           <thead class="bg-gray-50 sticky top-0">
-
             <tr>
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">ID</th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">ПІБ / Посада</th>
@@ -124,196 +72,75 @@
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Статус</th>
               <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Дії</th>
             </tr>
-
           </thead>
-
-          <tbody
-            id="employees-table-body"
-            class="divide-y divide-gray-200 text-sm text-gray-600"
-          >
-          </tbody>
-
+          <tbody id="employees-table-body" class="divide-y divide-gray-200 text-sm text-gray-600"></tbody>
         </table>
-
       </div>
-
     </div>
 
     <!-- FORM -->
-
     <div class="bg-white p-6 rounded-lg shadow h-fit sticky top-6">
-
       <div class="flex justify-between items-center mb-4">
-
-        <h2 id="form-title" class="text-xl font-semibold text-gray-700">
-          Додати працівника
-        </h2>
-
-        <button
-          onclick="resetForm()"
-          id="btn-cancel-edit"
-          class="hidden text-xs text-red-500 hover:underline"
-        >
-          Скасувати ред.
-        </button>
-
+        <h2 id="form-title" class="text-xl font-semibold text-gray-700">Додати працівника</h2>
+        <button onclick="resetForm()" id="btn-cancel-edit" class="hidden text-xs text-red-500 hover:underline">Скасувати ред.</button>
       </div>
 
       <form id="employee-form" onsubmit="submitForm(event)" class="space-y-4">
-
         <input type="hidden" id="emp-id">
 
         <div>
-
-          <label class="block text-xs font-semibold uppercase text-gray-500">
-            ПІБ працівника
-          </label>
-
-          <input
-            type="text"
-            id="pib"
-            required
-            class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          >
-
+          <label class="block text-xs font-semibold uppercase text-gray-500">ПІБ працівника</label>
+          <input type="text" id="pib" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-
           <div>
-
-            <label class="block text-xs font-semibold uppercase text-gray-500">
-              Відділ
-            </label>
-
-            <input
-              type="text"
-              id="department"
-              required
-              class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            >
-
+            <label class="block text-xs font-semibold uppercase text-gray-500">Відділ</label>
+            <input type="text" id="department" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
           </div>
-
           <div>
-
-            <label class="block text-xs font-semibold uppercase text-gray-500">
-              Посада
-            </label>
-
-            <input
-              type="text"
-              id="position"
-              required
-              class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            >
-
+            <label class="block text-xs font-semibold uppercase text-gray-500">Посада</label>
+            <input type="text" id="position" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
           </div>
-
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-
           <div>
-
-            <label class="block text-xs font-semibold uppercase text-gray-500">
-              Початок адаптації
-            </label>
-
-            <input
-              type="date"
-              id="adaptationDate"
-              required
-              class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            >
-
+            <label class="block text-xs font-semibold uppercase text-gray-500">Початок адаптації</label>
+            <input type="date" id="adaptationDate" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
           </div>
-
           <div>
-
-            <label class="block text-xs font-semibold uppercase text-gray-500">
-              Початок роботи
-            </label>
-
-            <input
-              type="date"
-              id="startDate"
-              required
-              class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            >
-
+            <label class="block text-xs font-semibold uppercase text-gray-500">Початок роботи</label>
+            <input type="date" id="startDate" required class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
           </div>
-
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-
           <div>
-
-            <label class="block text-xs font-semibold uppercase text-gray-500">
-              Дата звільнення
-            </label>
-
-            <input
-              type="date"
-              id="dismissalDate"
-              onchange="autoUpdateStatus()"
-              class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            >
-
+            <label class="block text-xs font-semibold uppercase text-gray-500">Дата звільнення</label>
+            <input type="date" id="dismissalDate" onchange="autoUpdateStatus()" class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
           </div>
-
           <div>
-
-            <label class="block text-xs font-semibold uppercase text-gray-500">
-              Статус
-            </label>
-
-            <input
-              type="text"
-              id="status"
-              value="Активний"
-              readonly
-              class="w-full mt-1 p-2 border rounded text-sm bg-gray-100 text-green-600 font-bold"
-            >
-
+            <label class="block text-xs font-semibold uppercase text-gray-500">Статус</label>
+            <input type="text" id="status" value="Активний" readonly class="w-full mt-1 p-2 border rounded text-sm bg-gray-100 text-green-600 font-bold">
           </div>
-
         </div>
 
         <div>
-
-          <label class="block text-xs font-semibold uppercase text-gray-500">
-            Посилання на папку
-          </label>
-
-          <input
-            type="url"
-            id="folderUrl"
-            placeholder="https://drive.google.com/..."
-            class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          >
-
+          <label class="block text-xs font-semibold uppercase text-gray-500">Посилання на папку</label>
+          <input type="url" id="folderUrl" placeholder="https://drive.google.com/..." class="w-full mt-1 p-2 border rounded text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
         </div>
 
-        <button
-          type="submit"
-          id="btn-submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition text-sm shadow"
-        >
+        <button type="submit" id="btn-submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition text-sm shadow">
           Зберегти картку
         </button>
-
       </form>
-
     </div>
 
   </div>
-
 </div>
 
 <script>
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
 
 let allEmployees = [];
@@ -327,29 +154,28 @@ function showLoading(show) {
   document.getElementById('loading').style.display = show ? 'block' : 'none';
 }
 
+function logout() {
+  localStorage.clear();
+  window.location.href = 'login.html';
+}
+
 // ======================================
 // LOAD EMPLOYEES
 // ======================================
-
 async function loadEmployees() {
-
   const cachedData = localStorage.getItem('hr_employees_cache');
 
   if (cachedData) {
-
     allEmployees = JSON.parse(cachedData);
     renderTable();
-
   } else {
-
     showLoading(true);
-
   }
 
   try {
-
-    const login = localStorage.getItem('hr_login');
-    const password = localStorage.getItem('hr_password');
+    // виправлено: правильні ключі hr_user / hr_pass
+    const login = localStorage.getItem('hr_user');
+    const password = localStorage.getItem('hr_pass');
 
     const response = await fetch(
       API_URL +
@@ -360,207 +186,100 @@ async function loadEmployees() {
     const result = await response.json();
 
     if (result.success) {
-
       allEmployees = result.data || [];
-
-      localStorage.setItem(
-        'hr_employees_cache',
-        JSON.stringify(allEmployees)
-      );
-
+      localStorage.setItem('hr_employees_cache', JSON.stringify(allEmployees));
       renderTable();
-
     } else {
-
       localStorage.clear();
       window.location.href = 'login.html';
-
     }
-
   } catch (error) {
-
     console.error(error);
-
     if (!cachedData) {
       alert('Помилка завантаження');
     }
-
   }
 
   showLoading(false);
-
 }
 
 // ======================================
 // RENDER TABLE
 // ======================================
-
 function renderTable() {
-
   const tbody = document.getElementById('employees-table-body');
-
   tbody.innerHTML = '';
 
-  const searchQuery = document
-    .getElementById('search-input')
-    .value
-    .toLowerCase();
+  const searchQuery = document.getElementById('search-input').value.toLowerCase();
 
   const filtered = allEmployees.filter(emp => {
-
-    if (
-      currentFilter === 'Активні' &&
-      emp.status !== 'Активний'
-    ) return false;
-
-    if (
-      currentFilter === 'Звільнені' &&
-      emp.status !== 'Звільнений'
-    ) return false;
-
-    const matchesPib =
-      (emp.pib || '')
-      .toLowerCase()
-      .includes(searchQuery);
-
-    const matchesDept =
-      (emp.department || '')
-      .toLowerCase()
-      .includes(searchQuery);
-
+    if (currentFilter === 'Активні' && emp.status !== 'Активний') return false;
+    if (currentFilter === 'Звільнені' && emp.status !== 'Звільнений') return false;
+    const matchesPib = (emp.pib || '').toLowerCase().includes(searchQuery);
+    const matchesDept = (emp.department || '').toLowerCase().includes(searchQuery);
     return matchesPib || matchesDept;
-
   });
 
   if (filtered.length === 0) {
-
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="5" class="px-4 py-8 text-center text-gray-400">
-          Нікого не знайдено
-        </td>
-      </tr>
-    `;
-
+    tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Нікого не знайдено</td></tr>`;
     return;
-
   }
 
   filtered.forEach(emp => {
-
     const folderBadge = emp.folderUrl
       ? `<a href="${emp.folderUrl}" target="_blank" class="text-blue-500 hover:text-blue-700 font-medium inline-flex items-center gap-1">📁 Документи</a>`
       : `<span class="text-gray-300 italic">Немає лінку</span>`;
 
-    const statusClass =
-      emp.status === 'Активний'
-        ? 'bg-green-100 text-green-800'
-        : 'bg-red-100 text-red-800';
+    const statusClass = emp.status === 'Активний' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
 
     tbody.innerHTML += `
       <tr class="hover:bg-gray-50 transition">
-
-        <td class="px-4 py-3 font-bold text-gray-700">
-          #${emp.id}
-        </td>
-
+        <td class="px-4 py-3 font-bold text-gray-700">#${emp.id}</td>
         <td class="px-4 py-3">
-
-          <div class="font-semibold text-gray-900">
-            ${emp.pib}
-          </div>
-
-          <div class="text-xs text-gray-400">
-            ${emp.position}
-          </div>
-
+          <div class="font-semibold text-gray-900">${emp.pib}</div>
+          <div class="text-xs text-gray-400">${emp.position}</div>
         </td>
-
-        <td class="px-4 py-3 text-gray-600">
-          ${emp.department}
-        </td>
-
+        <td class="px-4 py-3 text-gray-600">${emp.department}</td>
         <td class="px-4 py-3">
-
-          <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${statusClass}">
-            ${emp.status}
-          </span>
-
+          <span class="px-2 py-0.5 rounded-full text-xs font-semibold ${statusClass}">${emp.status}</span>
         </td>
-
         <td class="px-4 py-3 space-x-3">
-
-          <button
-            onclick="editEmployee(${emp.id})"
-            class="text-blue-600 hover:text-blue-900 hover:underline font-medium"
-          >
-            Редагувати
-          </button>
-
+          <button onclick="editEmployee(${emp.id})" class="text-blue-600 hover:text-blue-900 hover:underline font-medium">Редагувати</button>
           ${folderBadge}
-
         </td>
-
       </tr>
     `;
-
   });
-
 }
 
 function changeFilter(status) {
-
   currentFilter = status;
-
   document.getElementById('tab-all').classList.remove('tab-active');
   document.getElementById('tab-active').classList.remove('tab-active');
   document.getElementById('tab-fired').classList.remove('tab-active');
-
-  if (status === 'Всі') {
-    document.getElementById('tab-all').classList.add('tab-active');
-  }
-
-  if (status === 'Активні') {
-    document.getElementById('tab-active').classList.add('tab-active');
-  }
-
-  if (status === 'Звільнені') {
-    document.getElementById('tab-fired').classList.add('tab-active');
-  }
-
+  if (status === 'Всі') document.getElementById('tab-all').classList.add('tab-active');
+  if (status === 'Активні') document.getElementById('tab-active').classList.add('tab-active');
+  if (status === 'Звільнені') document.getElementById('tab-fired').classList.add('tab-active');
   renderTable();
-
 }
 
 function autoUpdateStatus() {
-
   const dateVal = document.getElementById('dismissalDate').value;
   const statusField = document.getElementById('status');
-
   if (dateVal) {
-
     statusField.value = 'Звільнений';
-
     statusField.classList.remove('text-green-600');
     statusField.classList.add('text-red-600');
-
   } else {
-
     statusField.value = 'Активний';
-
     statusField.classList.remove('text-red-600');
     statusField.classList.add('text-green-600');
-
   }
-
 }
 
 function editEmployee(id) {
-
   const emp = allEmployees.find(e => e.id == id);
-
   if (!emp) return;
-
   document.getElementById('emp-id').value = emp.id;
   document.getElementById('pib').value = emp.pib;
   document.getElementById('department').value = emp.department;
@@ -569,66 +288,36 @@ function editEmployee(id) {
   document.getElementById('startDate').value = emp.startDate;
   document.getElementById('dismissalDate').value = emp.dismissalDate;
   document.getElementById('folderUrl').value = emp.folderUrl;
-
   autoUpdateStatus();
-
-  document.getElementById('form-title').innerText =
-    `Редагувати #${emp.id}`;
-
-  document.getElementById('btn-submit').innerText =
-    'Оновити дані працівника';
-
-  document.getElementById('btn-submit')
-    .classList.replace('bg-blue-600', 'bg-yellow-600');
-
-  document.getElementById('btn-submit')
-    .classList.replace('hover:bg-blue-700', 'hover:bg-yellow-700');
-
-  document.getElementById('btn-cancel-edit')
-    .classList.remove('hidden');
-
+  document.getElementById('form-title').innerText = `Редагувати #${emp.id}`;
+  document.getElementById('btn-submit').innerText = 'Оновити дані працівника';
+  document.getElementById('btn-submit').classList.replace('bg-blue-600', 'bg-yellow-600');
+  document.getElementById('btn-submit').classList.replace('hover:bg-blue-700', 'hover:bg-yellow-700');
+  document.getElementById('btn-cancel-edit').classList.remove('hidden');
 }
 
 function resetForm() {
-
   document.getElementById('employee-form').reset();
-
   document.getElementById('emp-id').value = '';
-
   autoUpdateStatus();
-
-  document.getElementById('form-title').innerText =
-    'Додати працівника';
-
-  document.getElementById('btn-submit').innerText =
-    'Зберегти картку';
-
-  document.getElementById('btn-submit')
-    .classList.replace('bg-yellow-600', 'bg-blue-600');
-
-  document.getElementById('btn-submit')
-    .classList.replace('hover:bg-yellow-700', 'hover:bg-blue-700');
-
-  document.getElementById('btn-cancel-edit')
-    .classList.add('hidden');
-
+  document.getElementById('form-title').innerText = 'Додати працівника';
+  document.getElementById('btn-submit').innerText = 'Зберегти картку';
+  document.getElementById('btn-submit').classList.replace('bg-yellow-600', 'bg-blue-600');
+  document.getElementById('btn-submit').classList.replace('hover:bg-yellow-700', 'hover:bg-blue-700');
+  document.getElementById('btn-cancel-edit').classList.add('hidden');
 }
 
 // ======================================
 // SUBMIT
 // ======================================
-
 async function submitForm(e) {
-
   e.preventDefault();
-
   showLoading(true);
 
   const employeeData = {
-
-    login: localStorage.getItem('hr_login'),
-    password: localStorage.getItem('hr_password'),
-
+    action: 'addEmployee', // ← ДОДАНО: Apps Script тепер знає що робити
+    login: localStorage.getItem('hr_user'),     // виправлено
+    password: localStorage.getItem('hr_pass'),  // виправлено
     id: document.getElementById('emp-id').value,
     pib: document.getElementById('pib').value,
     department: document.getElementById('department').value,
@@ -638,11 +327,9 @@ async function submitForm(e) {
     dismissalDate: document.getElementById('dismissalDate').value,
     status: document.getElementById('status').value,
     folderUrl: document.getElementById('folderUrl').value
-
   };
 
   try {
-
     const response = await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify(employeeData)
@@ -651,35 +338,20 @@ async function submitForm(e) {
     const result = await response.json();
 
     if (result.success) {
-
       resetForm();
-
-      localStorage.removeItem(
-        'hr_employees_cache'
-      );
-
+      localStorage.removeItem('hr_employees_cache');
       await loadEmployees();
-
       alert('Дані успішно збережено!');
-
     } else {
-
       alert('Помилка: ' + result.error);
-
     }
-
   } catch (error) {
-
     console.error(error);
-
     alert('Помилка звʼязку з сервером');
-
   }
 
   showLoading(false);
-
 }
-
 </script>
 
 </body>
