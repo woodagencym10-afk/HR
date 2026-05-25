@@ -9,104 +9,58 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
-
     #doc-iframe {
       background-color: white;
       box-shadow: 0 10px 25px rgba(0,0,0,0.15);
       border: 1px solid #e2e8f0;
     }
-
-    ::-webkit-scrollbar {
-      width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: #f1f5f9;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 10px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #94a3b8;
-    }
-
-    .modal-backdrop {
-      backdrop-filter: blur(4px);
-    }
-
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .modal-backdrop { backdrop-filter: blur(4px); }
   </style>
 </head>
 
 <body class="bg-gray-50 font-sans p-6 text-gray-900">
 
 <script>
-
   // AUTH CHECK
   if (!localStorage.getItem('hr_logged')) {
     window.location.href = 'login.html';
   }
-
 </script>
 
 <div class="max-w-7xl mx-auto">
 
   <nav class="flex gap-4 mb-8 bg-white p-2 rounded-xl shadow-sm w-fit border border-gray-100">
-
-    <a
-      href="index.html"
-      class="px-5 py-2 font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-    >
-      <i class="fas fa-users mr-2"></i>
-      База працівників
+    <a href="index.html" class="px-5 py-2 font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition">
+      <i class="fas fa-users mr-2"></i>База працівників
     </a>
-
-    <a
-      href="knowledge.html"
-      class="px-5 py-2 font-bold bg-blue-600 text-white rounded-lg shadow-md transition"
-    >
-      <i class="fas fa-book mr-2"></i>
-      База знань
+    <a href="knowledge.html" class="px-5 py-2 font-bold bg-blue-600 text-white rounded-lg shadow-md transition">
+      <i class="fas fa-book mr-2"></i>База знань
     </a>
-
+    <button onclick="logout()" class="px-5 py-2 font-medium text-red-500 hover:bg-red-50 rounded-lg transition">
+      <i class="fas fa-sign-out-alt mr-2"></i>Вийти
+    </button>
   </nav>
 
   <div class="flex justify-between items-center mb-6">
-
     <div>
-
-      <h1 class="text-3xl font-extrabold text-gray-900">
-        База Знань
-      </h1>
-
-      <p class="text-gray-500 mt-1">
-        Централізований доступ до всіх інструкцій та регламентів компанії
-      </p>
-
+      <h1 class="text-3xl font-extrabold text-gray-900">База Знань</h1>
+      <p class="text-gray-500 mt-1">Централізований доступ до всіх інструкцій та регламентів компанії</p>
     </div>
-
-    <div
-      id="loading"
-      class="hidden flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-100 animate-pulse"
-    >
-      <i class="fas fa-sync-alt fa-spin mr-2"></i>
-      Оновлення даних...
+    <div id="loading" class="hidden flex items-center bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-100 animate-pulse">
+      <i class="fas fa-sync-alt fa-spin mr-2"></i>Оновлення даних...
     </div>
-
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
     <!-- CONTENT -->
-
     <div class="lg:col-span-2">
-
       <div class="mb-6 relative">
-
         <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-
         <input
           type="text"
           id="search-kb"
@@ -114,181 +68,73 @@
           placeholder="Шукати за назвою, темою або описом..."
           class="w-full pl-11 p-3 bg-white border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm transition"
         >
-
       </div>
-
-      <div
-        id="kb-container"
-        class="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-      </div>
-
+      <div id="kb-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
     </div>
 
     <!-- FORM -->
-
     <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-fit sticky top-8">
-
       <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-
-        <i class="fas fa-plus-circle text-blue-600 mr-2"></i>
-        Додати статтю
-
+        <i class="fas fa-plus-circle text-blue-600 mr-2"></i>Додати статтю
       </h2>
 
-      <form
-        id="kb-form"
-        onsubmit="submitKbForm(event)"
-        class="space-y-5"
-      >
-
+      <form id="kb-form" onsubmit="submitKbForm(event)" class="space-y-5">
         <div>
-
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-            Назва статті
-          </label>
-
-          <input
-            type="text"
-            id="kb-title"
-            required
-            placeholder="Наприклад: Правила CRM"
-            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
-          >
-
+          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Назва статті</label>
+          <input type="text" id="kb-title" required placeholder="Наприклад: Правила CRM"
+            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
         </div>
-
         <div>
-
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-            Категорія
-          </label>
-
-          <input
-            type="text"
-            id="kb-category"
-            required
-            placeholder="Відділ або Тема"
-            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
-          >
-
+          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Категорія</label>
+          <input type="text" id="kb-category" required placeholder="Відділ або Тема"
+            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
         </div>
-
         <div>
-
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-            Короткий опис
-          </label>
-
-          <textarea
-            id="kb-desc"
-            rows="3"
-            required
-            placeholder="Про що ця інструкція?"
-            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
-          ></textarea>
-
+          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Короткий опис</label>
+          <textarea id="kb-desc" rows="3" required placeholder="Про що ця інструкція?"
+            class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"></textarea>
         </div>
-
         <div>
-
-          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">
-            Посилання на Google Doc
-          </label>
-
+          <label class="block text-xs font-bold uppercase text-gray-400 mb-1 ml-1">Посилання на Google Doc</label>
           <div class="relative">
-
             <i class="fab fa-google-drive absolute left-3 top-3.5 text-gray-300"></i>
-
-            <input
-              type="url"
-              id="kb-url"
-              required
-              placeholder="https://docs.google.com/..."
-              class="w-full p-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition"
-            >
-
+            <input type="url" id="kb-url" required placeholder="https://docs.google.com/..."
+              class="w-full p-3 pl-10 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition">
           </div>
-
         </div>
-
-        <button
-          type="submit"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg transform hover:-translate-y-0.5"
-        >
+        <button type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition duration-200 shadow-lg transform hover:-translate-y-0.5">
           Зберегти статтю
         </button>
-
       </form>
-
     </div>
 
   </div>
-
 </div>
 
 <!-- MODAL -->
-
-<div
-  id="doc-modal"
-  class="fixed inset-0 z-50 hidden modal-backdrop bg-gray-900 bg-opacity-60 flex justify-center items-center p-4"
->
-
+<div id="doc-modal" class="fixed inset-0 z-50 hidden modal-backdrop bg-gray-900 bg-opacity-60 flex justify-center items-center p-4">
   <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-full max-h-[92vh] flex flex-col overflow-hidden">
-
     <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white">
-
       <div class="flex items-center">
-
         <i class="fas fa-file-alt text-blue-600 text-xl mr-3"></i>
-
-        <h3
-          id="modal-title"
-          class="text-xl font-extrabold text-gray-800 truncate max-w-lg"
-        >
-          Назва документа
-        </h3>
-
+        <h3 id="modal-title" class="text-xl font-extrabold text-gray-800 truncate max-w-lg">Назва документа</h3>
       </div>
-
-      <button
-        onclick="closeModal()"
-        class="bg-gray-100 hover:bg-red-50 text-gray-400 hover:text-red-500 p-2 rounded-full transition outline-none"
-      >
+      <button onclick="closeModal()" class="bg-gray-100 hover:bg-red-50 text-gray-400 hover:text-red-500 p-2 rounded-full transition outline-none">
         <i class="fas fa-times text-xl"></i>
       </button>
-
     </div>
-
     <div class="flex-grow w-full relative bg-gray-200 p-3 md:p-6 overflow-hidden">
-
-      <div
-        id="iframe-loading"
-        class="absolute inset-0 flex flex-col justify-center items-center text-blue-600 z-0"
-      >
-
+      <div id="iframe-loading" class="absolute inset-0 flex flex-col justify-center items-center text-blue-600 z-0">
         <i class="fas fa-spinner fa-spin text-4xl mb-4"></i>
-
-        <p class="font-bold">
-          Відкриваємо документ...
-        </p>
-
+        <p class="font-bold">Відкриваємо документ...</p>
       </div>
-
-      <iframe
-        id="doc-iframe"
-        class="w-full h-full rounded-lg relative z-10"
-        src=""
-      ></iframe>
-
+      <iframe id="doc-iframe" class="w-full h-full rounded-lg relative z-10" src=""></iframe>
     </div>
-
   </div>
-
 </div>
 
 <script>
-
 const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
 
 let allKnowledge = [];
@@ -297,306 +143,174 @@ window.onload = function() {
   loadKnowledge();
 };
 
+function logout() {
+  localStorage.clear();
+  window.location.href = 'login.html';
+}
+
 function getPreviewUrl(url) {
-
   if (!url) return '';
-
-  if (
-    url.includes('docs.google.com') &&
-    url.includes('/edit')
-  ) {
-
-    return url.replace(
-      /\/edit.*$/,
-      '/preview?rm=minimal'
-    );
-
+  if (url.includes('docs.google.com') && url.includes('/edit')) {
+    return url.replace(/\/edit.*$/, '/preview?rm=minimal');
   }
-
   return url;
-
 }
 
 function openModal(url, title) {
-
   document.getElementById('modal-title').innerText = title;
-
   document.getElementById('iframe-loading').style.display = 'flex';
-
-  document.getElementById('doc-iframe').src =
-    getPreviewUrl(url);
-
-  document.getElementById('doc-modal')
-    .classList.remove('hidden');
-
+  document.getElementById('doc-iframe').src = getPreviewUrl(url);
+  document.getElementById('doc-modal').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
-
 }
 
 function closeModal() {
-
-  document.getElementById('doc-modal')
-    .classList.add('hidden');
-
+  document.getElementById('doc-modal').classList.add('hidden');
   document.getElementById('doc-iframe').src = '';
-
   document.body.style.overflow = 'auto';
-
 }
 
-document
-  .getElementById('doc-modal')
-  .addEventListener('click', function(e) {
-
-    if (e.target === this) {
-      closeModal();
-    }
-
+document.getElementById('doc-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
 });
 
 // ======================================
 // LOAD KNOWLEDGE
 // ======================================
-
 async function loadKnowledge() {
-
   const container = document.getElementById('kb-container');
-
-  const cachedData = localStorage.getItem(
-    'hr_knowledge_cache'
-  );
+  const cachedData = localStorage.getItem('hr_knowledge_cache');
 
   if (cachedData) {
-
     allKnowledge = JSON.parse(cachedData);
-
     renderKnowledge();
-
   } else {
-
-    document
-      .getElementById('loading')
-      .classList.remove('hidden');
-
+    document.getElementById('loading').classList.remove('hidden');
   }
 
   try {
-
-    const login = localStorage.getItem('hr_login');
-    const password = localStorage.getItem('hr_password');
+    // ✅ ВИПРАВЛЕНО: правильні ключі hr_user / hr_pass
+    const login = localStorage.getItem('hr_user');
+    const password = localStorage.getItem('hr_pass');
 
     const response = await fetch(
-
       API_URL +
       '?action=getKnowledge' +
       '&login=' + encodeURIComponent(login) +
       '&password=' + encodeURIComponent(password)
-
     );
 
     const result = await response.json();
 
     if (result.success) {
-
       allKnowledge = result.data || [];
-
-      localStorage.setItem(
-        'hr_knowledge_cache',
-        JSON.stringify(allKnowledge)
-      );
-
+      localStorage.setItem('hr_knowledge_cache', JSON.stringify(allKnowledge));
       renderKnowledge();
-
     } else {
-
       localStorage.clear();
       window.location.href = 'login.html';
-
     }
 
   } catch (error) {
-
     console.error(error);
-
     if (!cachedData) {
-
       container.innerHTML = `
         <div class="col-span-2 text-center text-red-500 p-10 bg-white rounded-2xl">
           Помилка завантаження даних
         </div>
       `;
-
     }
-
   }
 
-  document
-    .getElementById('loading')
-    .classList.add('hidden');
-
+  document.getElementById('loading').classList.add('hidden');
 }
 
 // ======================================
 // RENDER
 // ======================================
-
 function renderKnowledge() {
-
   const container = document.getElementById('kb-container');
-
   container.innerHTML = '';
 
-  const query = document
-    .getElementById('search-kb')
-    .value
-    .toLowerCase();
+  const query = document.getElementById('search-kb').value.toLowerCase();
 
   const filteredData = allKnowledge.filter(item => {
-
     if (!item['Назва статті']) return false;
-
-    const title =
-      (item['Назва статті'] || '')
-      .toLowerCase();
-
-    const category =
-      (item['Категорія'] || '')
-      .toLowerCase();
-
-    const desc =
-      (item['Короткий опис'] || '')
-      .toLowerCase();
-
-    return (
-      title.includes(query) ||
-      category.includes(query) ||
-      desc.includes(query)
-    );
-
+    const title = (item['Назва статті'] || '').toLowerCase();
+    const category = (item['Категорія'] || '').toLowerCase();
+    const desc = (item['Короткий опис'] || '').toLowerCase();
+    return title.includes(query) || category.includes(query) || desc.includes(query);
   });
 
   if (filteredData.length === 0) {
-
-    if (query) {
-
-      container.innerHTML = `
-        <div class="col-span-2 p-12 text-center bg-white rounded-3xl border border-gray-100">
-          <i class="fas fa-search text-gray-300 text-5xl mb-4"></i>
-          <p class="text-gray-500 font-medium text-lg">
-            Нічого не знайдено
-          </p>
-        </div>
-      `;
-
-    } else {
-
-      container.innerHTML = `
-        <div class="col-span-2 p-12 text-center bg-white rounded-3xl border-2 border-dashed border-gray-200">
-          <i class="fas fa-folder-open text-gray-200 text-6xl mb-4"></i>
-          <p class="text-gray-400 font-medium text-lg">
-            Поки що жодних інструкцій немає
-          </p>
-        </div>
-      `;
-
-    }
-
+    container.innerHTML = query
+      ? `<div class="col-span-2 p-12 text-center bg-white rounded-3xl border border-gray-100">
+           <i class="fas fa-search text-gray-300 text-5xl mb-4"></i>
+           <p class="text-gray-500 font-medium text-lg">Нічого не знайдено</p>
+         </div>`
+      : `<div class="col-span-2 p-12 text-center bg-white rounded-3xl border-2 border-dashed border-gray-200">
+           <i class="fas fa-folder-open text-gray-200 text-6xl mb-4"></i>
+           <p class="text-gray-400 font-medium text-lg">Поки що жодних інструкцій немає</p>
+         </div>`;
     return;
-
   }
 
   filteredData.forEach(item => {
-
-    const safeTitle =
-      item['Назва статті']
-      .replace(/'/g, "\\'")
-      .replace(/"/g, '&quot;');
-
-    const safeUrl =
-      item['Посилання на Google Doc'];
+    const safeTitle = (item['Назва статті'] || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    const safeUrl = item['Посилання на Google Doc'] || '';
 
     container.innerHTML += `
-
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition duration-300 flex flex-col group">
-
         <div class="flex justify-between items-start mb-4">
-
           <span class="bg-blue-50 text-blue-600 text-xs font-extrabold px-3 py-1 rounded-full uppercase tracking-widest border border-blue-100">
             ${item['Категорія'] || 'Інше'}
           </span>
-
         </div>
-
         <h3 class="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition">
           ${item['Назва статті']}
         </h3>
-
         <p class="text-sm text-gray-500 mb-6 flex-grow leading-relaxed">
           ${item['Короткий опис'] || ''}
         </p>
-
         <div class="flex justify-between items-center pt-5 border-t border-gray-50">
-
           <div class="flex items-center text-gray-400">
-
             <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center mr-2">
               <i class="fas fa-user text-[10px]"></i>
             </div>
-
-            <span class="text-xs font-semibold">
-              ${item['Автор (хто додав)'] || 'HR'}
-            </span>
-
+            <span class="text-xs font-semibold">${item['Автор (хто додав)'] || 'HR'}</span>
           </div>
-
           <button
             onclick="openModal('${safeUrl}', '${safeTitle}')"
             class="bg-gray-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-blue-600 transition flex items-center gap-2 shadow-sm"
           >
-            <i class="fas fa-book-open"></i>
-            ЧИТАТИ
+            <i class="fas fa-book-open"></i>ЧИТАТИ
           </button>
-
         </div>
-
       </div>
-
     `;
-
   });
-
 }
 
 // ======================================
 // SUBMIT
 // ======================================
-
 async function submitKbForm(e) {
-
   e.preventDefault();
-
-  document
-    .getElementById('loading')
-    .classList.remove('hidden');
+  document.getElementById('loading').classList.remove('hidden');
 
   const payload = {
-
-    login: localStorage.getItem('hr_login'),
-    password: localStorage.getItem('hr_password'),
-
     action: 'addKnowledge',
-
+    // ✅ ВИПРАВЛЕНО: правильні ключі hr_user / hr_pass
+    login: localStorage.getItem('hr_user'),
+    password: localStorage.getItem('hr_pass'),
     title: document.getElementById('kb-title').value,
     category: document.getElementById('kb-category').value,
     description: document.getElementById('kb-desc').value,
     docUrl: document.getElementById('kb-url').value,
-
     author: localStorage.getItem('hr_user')
-
   };
 
   try {
-
     const response = await fetch(API_URL, {
       method: 'POST',
       body: JSON.stringify(payload)
@@ -605,40 +319,21 @@ async function submitKbForm(e) {
     const result = await response.json();
 
     if (result.success) {
-
       document.getElementById('kb-form').reset();
-
-      localStorage.removeItem(
-        'hr_knowledge_cache'
-      );
-
+      localStorage.removeItem('hr_knowledge_cache');
       await loadKnowledge();
-
       alert('Статтю додано');
-
     } else {
-
-      alert(
-        'Помилка: ' +
-        (result.error || 'Unknown error')
-      );
-
+      alert('Помилка: ' + (result.error || 'Unknown error'));
     }
 
   } catch (error) {
-
     console.error(error);
-
     alert('Помилка сервера');
-
   }
 
-  document
-    .getElementById('loading')
-    .classList.add('hidden');
-
+  document.getElementById('loading').classList.add('hidden');
 }
-
 </script>
 
 </body>
