@@ -14,7 +14,8 @@
   <div class="w-full max-w-md bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-700">
 
     <div class="text-center mb-8">
-      <div class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+
+      <div class="w-20 h-20 bg-blue-600 rounded-2xl mx-auto flex items-center justify-center text-white text-3xl font-bold">
         HR
       </div>
 
@@ -25,22 +26,17 @@
       <p class="text-gray-400 mt-2">
         Авторизація в системі
       </p>
+
     </div>
 
     <div class="space-y-5">
 
-      <div>
-        <label class="text-sm text-gray-300 block mb-2">
-          Пароль
-        </label>
-
-        <input
-          type="password"
-          id="password"
-          placeholder="Введіть пароль"
-          class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-      </div>
+      <input
+        type="password"
+        id="password"
+        placeholder="Введіть пароль"
+        class="w-full bg-gray-900 border border-gray-700 rounded-xl p-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
 
       <button
         id="loginBtn"
@@ -54,92 +50,91 @@
         id="errorBox"
         class="hidden bg-red-500/20 border border-red-500 text-red-300 text-sm p-3 rounded-xl"
       >
-        Невірний пароль
       </div>
 
     </div>
 
   </div>
 
-  <script>
+<script>
 
-    // ВСТАВ СВІЙ GOOGLE SCRIPT URL
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
+const API_URL = 'ТУТ_ВСТАВ_СВІЙ_GOOGLE_SCRIPT_URL';
 
-    async function handleLogin() {
+async function handleLogin() {
 
-      const password = document.getElementById('password').value;
-      const button = document.getElementById('loginBtn');
-      const errorBox = document.getElementById('errorBox');
+  const password = document.getElementById('password').value;
+  const button = document.getElementById('loginBtn');
 
-      errorBox.classList.add('hidden');
+  hideError();
 
-      if (!password) {
-        showError('Введіть пароль');
-        return;
-      }
+  if (!password) {
+    showError('Введіть пароль');
+    return;
+  }
 
-      button.disabled = true;
-      button.innerHTML = 'Завантаження...';
+  button.disabled = true;
+  button.innerText = 'Перевірка...';
 
-      try {
+  try {
 
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'text/plain'
-          },
-          body: JSON.stringify({
-            action: 'login',
-            password: password
-          })
-        });
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain'
+      },
+      body: JSON.stringify({
+        password: password
+      })
+    });
 
-        const result = await response.json();
+    const result = await response.json();
 
-        if (result.success) {
+    if (result.success) {
 
-          localStorage.setItem('hr_token', result.token);
-          localStorage.setItem('hr_role', result.role);
+      localStorage.setItem('hr_pass', password);
+      localStorage.setItem('hr_role', result.role);
 
-          window.location.href = 'index.html';
+      window.location.href = 'index.html';
 
-        } else {
+    } else {
 
-          showError('Невірний пароль');
+      showError('Невірний пароль');
 
-        }
-
-      } catch (error) {
-
-        console.error(error);
-        showError('Помилка сервера');
-
-      }
-
-      button.disabled = false;
-      button.innerHTML = 'УВІЙТИ';
     }
 
-    function showError(text) {
-      const errorBox = document.getElementById('errorBox');
+  } catch (e) {
 
-      errorBox.innerText = text;
-      errorBox.classList.remove('hidden');
+    console.error(e);
+    showError('Помилка сервера');
+
+  }
+
+  button.disabled = false;
+  button.innerText = 'УВІЙТИ';
+}
+
+function showError(text) {
+  const box = document.getElementById('errorBox');
+
+  box.innerText = text;
+  box.classList.remove('hidden');
+}
+
+function hideError() {
+  document.getElementById('errorBox').classList.add('hidden');
+}
+
+document
+  .getElementById('password')
+  .addEventListener('keydown', function(e) {
+
+    if (e.key === 'Enter') {
+      handleLogin();
     }
 
-    // LOGIN НА ENTER
-    document
-      .getElementById('password')
-      .addEventListener('keydown', function(e) {
+  });
 
-        if (e.key === 'Enter') {
-          handleLogin();
-        }
-
-      });
-
-  </script>
+</script>
 
 </body>
 </html>
