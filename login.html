@@ -10,11 +10,10 @@
     <button onclick="handleLogin()">УВІЙТИ</button>
     <script>
         const API_URL = 'https://script.google.com/macros/s/AKfycbyqUgEf1WvOIhibm9Omx5RTtPsPUgzSnk2YXjnV7wYqYcts41COBrsBLvGcVfaIi26X9Q/exec';
-        
+
         async function handleLogin() {
             const login = document.getElementById('login').value;
             const password = document.getElementById('password').value;
-            
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -25,6 +24,7 @@
                     localStorage.setItem('hr_user', login);
                     localStorage.setItem('hr_pass', password);
                     localStorage.setItem('hr_role', result.role);
+                    localStorage.setItem('hr_logged', 'true'); // ← ДОДАНО
                     window.location.href = result.role === 'user' ? 'knowledge.html' : 'index.html';
                 } else {
                     alert('Помилка: ' + (result.error || 'Невірний логін або пароль'));
