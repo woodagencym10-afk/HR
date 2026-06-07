@@ -85,6 +85,15 @@
 
   .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
 
+  .loading-chip {
+    display: none;
+    font-size: 12px; font-weight: 500;
+    color: var(--blue);
+    background: var(--blue-light);
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
   /* ── PAGE ── */
   .page { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
   .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
@@ -297,7 +306,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="logo-icon">HR</div>
   <div class="logo-text">Portal</div>
@@ -307,11 +315,11 @@
     <a href="knowledge.html" class="nav-btn">База знань</a>
   </nav>
   <div class="header-right">
+    <div id="loading" class="loading-chip">Оновлення...</div>
     <button onclick="logout()" class="nav-btn danger">Вийти</button>
   </div>
 </header>
 
-<!-- PAGE -->
 <div class="page">
   <div class="page-header">
     <div class="page-title">Відпустки та Вихідні</div>
@@ -327,7 +335,6 @@
       <button class="btn-icon" onclick="goToToday()" style="width: auto; padding: 0 12px; font-size: 13px; font-weight: 500;">Сьогодні</button>
     </div>
 
-    <!-- Calendar Header -->
     <div class="calendar-grid" id="calendar-header">
       <div class="day-name">Пн</div>
       <div class="day-name">Вт</div>
@@ -338,12 +345,10 @@
       <div class="day-name" style="color: var(--red);">Нд</div>
     </div>
 
-    <!-- Calendar Body -->
     <div class="calendar-grid" id="calendar-body"></div>
   </div>
 </div>
 
-<!-- MODAL -->
 <div class="modal-overlay" id="event-modal">
   <div class="modal-card">
     <div class="modal-header">
@@ -356,7 +361,6 @@
       <div class="field">
         <label>Тип відсутності</label>
         <select id="event-type" required onchange="toggleDateRange()">
-          <!-- Тепер Вихідний на першому місці -->
           <option value="dayoff">🛋️ Вихідний</option>
           <option value="vacation">🌴 Відпустка</option>
         </select>
@@ -390,6 +394,9 @@
 if (!localStorage.getItem('hr_logged')) window.location.href = 'login.html';
 function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
+// ПОСИЛАННЯ НА ВАШ НОВИЙ ОКРЕМІЙ СКРИПТ КАЛЕНДАРЯ
+const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbxx55U3i57NRRhP9gyww_1l5YXjH4XOReW2DJGLzca6gOoqyg8Uhaa983lAR2DlcW_b3g/exec';
+
 // State
 let currentDate = new Date();
 let employees = [];
@@ -400,12 +407,14 @@ const months = [
   "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
 ];
 
-window.onload = () => {
-  loadData();
-  renderCalendar();
+function showLoading(v) { document.getElementById('loading').style.display = v ? 'block' : 'none'; }
+
+window.onload = async () => {
+  loadEmployeesFromCache();
+  await loadEventsFromServer();
 };
 
-function loadData() {
+function loadEmployeesFromCache() {
   const cachedEmp = localStorage.getItem('hr_employees_cache');
   if (cachedEmp) {
     employees = JSON.parse(cachedEmp).filter(e => e.status === 'Активний');
@@ -418,14 +427,30 @@ function loadData() {
     opt.textContent = emp.pib;
     select.appendChild(opt);
   });
-
-  const cachedEvents = localStorage.getItem('hr_events_cache');
-  if (cachedEvents) {
-    events = JSON.parse(cachedEvents);
-  }
 }
 
-// Перевірка, чи потрапляє конкретний день у проміжок дат події
+async function loadEventsFromServer() {
+  showLoading(true);
+  try {
+    const login = localStorage.getItem('hr_user');
+    const password = localStorage.getItem('hr_pass');
+    
+    const res = await fetch(`${CALENDAR_API_URL}?login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+    const result = await res.json();
+    
+    if (result.success) {
+      events = result.data || [];
+      renderCalendar();
+    } else {
+      alert('Помилка авторизації в календарі');
+    }
+  } catch(e) {
+    console.error(e);
+    alert('Помилка завантаження календаря з сервера');
+  }
+  showLoading(false);
+}
+
 function getEventsForDate(dateStr) {
   const checkDate = new Date(dateStr);
   checkDate.setHours(0,0,0,0);
@@ -496,7 +521,6 @@ function goToToday() {
   renderCalendar();
 }
 
-// Сховати/показати дату закінчення залежно від типу події
 function toggleDateRange() {
   const type = document.getElementById('event-type').value;
   const endDateField = document.getElementById('end-date-field');
@@ -525,10 +549,7 @@ function openModal(dateStr) {
   document.getElementById('event-end-date').value = dateStr;
   document.getElementById('modal-title').textContent = 'Додати подію';
   document.getElementById('btn-delete').style.display = 'none';
-  
-  // Дефолт - вихідний
   document.getElementById('event-type').value = 'dayoff'; 
-  
   toggleDateRange();
   modal.classList.add('active');
 }
@@ -552,41 +573,75 @@ function editEvent(id, e) {
   modal.classList.add('active');
 }
 
-function saveEvent(e) {
+async function saveEvent(e) {
   e.preventDefault();
+  showLoading(true);
   
   const id = document.getElementById('event-id').value || Date.now().toString();
   const startDate = document.getElementById('event-start-date').value;
   const type = document.getElementById('event-type').value;
   const employee = document.getElementById('event-employee').value;
-  
   const endDate = type === 'dayoff' ? startDate : document.getElementById('event-end-date').value;
 
   if (new Date(endDate) < new Date(startDate)) {
     alert('Помилка: Дата закінчення не може бути раніше дати початку!');
+    showLoading(false);
     return;
   }
 
-  const eventIndex = events.findIndex(x => x.id === id);
-  const newEvent = { id, startDate, endDate, type, employee };
+  const data = {
+    action: 'saveEvent',
+    login: localStorage.getItem('hr_user'),
+    password: localStorage.getItem('hr_pass'),
+    id: id,
+    startDate: startDate,
+    endDate: endDate,
+    type: type,
+    employee: employee
+  };
 
-  if (eventIndex > -1) {
-    events[eventIndex] = newEvent;
-  } else {
-    events.push(newEvent);
+  try {
+    const res = await fetch(CALENDAR_API_URL, { method: 'POST', body: JSON.stringify(data) });
+    const result = await res.json();
+    if (result.success) {
+      closeModal();
+      await loadEventsFromServer();
+    } else {
+      alert('Помилка збереження події на сервері');
+    }
+  } catch(err) {
+    console.error(err);
+    alert('Помилка звʼязку з сервером');
   }
-
-  localStorage.setItem('hr_events_cache', JSON.stringify(events));
-  closeModal();
-  renderCalendar();
+  showLoading(false);
 }
 
-function deleteEvent() {
+async function deleteEvent() {
+  if (!confirm('Ви впевнені, що хочете видалити цю подію?')) return;
+  showLoading(true);
+  
   const id = document.getElementById('event-id').value;
-  events = events.filter(x => x.id !== id);
-  localStorage.setItem('hr_events_cache', JSON.stringify(events));
-  closeModal();
-  renderCalendar();
+  const data = {
+    action: 'deleteEvent',
+    login: localStorage.getItem('hr_user'),
+    password: localStorage.getItem('hr_pass'),
+    id: id
+  };
+
+  try {
+    const res = await fetch(CALENDAR_API_URL, { method: 'POST', body: JSON.stringify(data) });
+    const result = await res.json();
+    if (result.success) {
+      closeModal();
+      await loadEventsFromServer();
+    } else {
+      alert('Помилка видалення події на сервері');
+    }
+  } catch(err) {
+    console.error(err);
+    alert('Помилка звʼязку з сервером');
+  }
+  showLoading(false);
 }
 </script>
 </body>
