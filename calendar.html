@@ -435,7 +435,7 @@ async function loadEventsFromServer() {
     const login = localStorage.getItem('hr_user');
     const password = localStorage.getItem('hr_pass');
     
-    const res = await fetch(`${CALENDAR_API_URL}?login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
+  const res = await fetch(`${CALENDAR_API_URL}?action=getCalendar&login=${encodeURIComponent(login)}&password=${encodeURIComponent(password)}`);
     const result = await res.json();
     
     if (result.success) {
