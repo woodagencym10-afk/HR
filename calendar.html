@@ -394,7 +394,7 @@
 if (!localStorage.getItem('hr_logged')) window.location.href = 'login.html';
 function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
-// ПОСИЛАННЯ НА ВАШ НОВИЙ ОКРЕМІЙ СКРИПТ КАЛЕНДАРЯ
+// Посилання на ваш бекенд
 const CALENDAR_API_URL = 'https://script.google.com/macros/s/AKfycbxx55U3i57NRRhP9gyww_1l5YXjH4XOReW2DJGLzca6gOoqyg8Uhaa983lAR2DlcW_b3g/exec';
 
 // State
@@ -442,7 +442,7 @@ async function loadEventsFromServer() {
       events = result.data || [];
       renderCalendar();
     } else {
-      alert('Помилка авторизації в календарі');
+      alert('Помилка авторизації в календарі: ' + (result.error || 'Невідома помилка'));
     }
   } catch(e) {
     console.error(e);
@@ -558,7 +558,8 @@ function closeModal() { modal.classList.remove('active'); }
 
 function editEvent(id, e) {
   e.stopPropagation();
-  const evt = events.find(x => x.id === id);
+  // Виправляємо помилку пошуку: приводимо обидва ID до тексту для точного порівняння
+  const evt = events.find(x => String(x.id) === String(id));
   if (!evt) return;
 
   document.getElementById('event-id').value = evt.id;
@@ -575,7 +576,6 @@ function editEvent(id, e) {
 
 async function saveEvent(e) {
   e.preventDefault();
-  showLoading(true);
   
   const id = document.getElementById('event-id').value || Date.now().toString();
   const startDate = document.getElementById('event-start-date').value;
@@ -585,10 +585,24 @@ async function saveEvent(e) {
 
   if (new Date(endDate) < new Date(startDate)) {
     alert('Помилка: Дата закінчення не може бути раніше дати початку!');
-    showLoading(false);
     return;
   }
 
+  const newEvent = { id, startDate, endDate, type, employee };
+  const eventIndex = events.findIndex(x => String(x.id) === String(id));
+
+  // МИТТЄВЕ ОНОВЛЕННЯ ІНТЕРФЕЙСУ
+  if (eventIndex > -1) {
+    events[eventIndex] = newEvent;
+  } else {
+    events.push(newEvent);
+  }
+  
+  closeModal();
+  renderCalendar(); 
+  
+  // ФОНОВЕ ЗБЕРЕЖЕННЯ НА СЕРВЕР
+  showLoading(true);
   const data = {
     action: 'saveEvent',
     login: localStorage.getItem('hr_user'),
@@ -603,24 +617,29 @@ async function saveEvent(e) {
   try {
     const res = await fetch(CALENDAR_API_URL, { method: 'POST', body: JSON.stringify(data) });
     const result = await res.json();
-    if (result.success) {
-      closeModal();
+    if (!result.success) {
+      alert('Помилка збереження події на сервері.');
       await loadEventsFromServer();
-    } else {
-      alert('Помилка збереження події на сервері');
     }
   } catch(err) {
     console.error(err);
-    alert('Помилка звʼязку з сервером');
+    alert('Помилка звʼязку з сервером. Подія збереглася лише локально.');
   }
   showLoading(false);
 }
 
 async function deleteEvent() {
   if (!confirm('Ви впевнені, що хочете видалити цю подію?')) return;
-  showLoading(true);
   
   const id = document.getElementById('event-id').value;
+  
+  // МИТТЄВЕ ВИДАЛЕННЯ З ІНТЕРФЕЙСУ
+  events = events.filter(x => String(x.id) !== String(id));
+  closeModal();
+  renderCalendar();
+
+  // ФОНОВЕ ВИДАЛЕННЯ З СЕРВЕРА
+  showLoading(true);
   const data = {
     action: 'deleteEvent',
     login: localStorage.getItem('hr_user'),
@@ -631,15 +650,13 @@ async function deleteEvent() {
   try {
     const res = await fetch(CALENDAR_API_URL, { method: 'POST', body: JSON.stringify(data) });
     const result = await res.json();
-    if (result.success) {
-      closeModal();
+    if (!result.success) {
+      alert('Помилка видалення події на сервері.');
       await loadEventsFromServer();
-    } else {
-      alert('Помилка видалення події на сервері');
     }
   } catch(err) {
     console.error(err);
-    alert('Помилка звʼязку з сервером');
+    alert('Помилка звʼязку з сервером. Спробуйте ще раз.');
   }
   showLoading(false);
 }
