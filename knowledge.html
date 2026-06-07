@@ -536,7 +536,7 @@ function closeConfirm() {
 }
 
 async function confirmDelete() {
-  if (!pendingDeleteId) return;
+  if (pendingDeleteId === null || pendingDeleteId === undefined || pendingDeleteId === '') return;
   closeConfirm();
   showLoading(true);
   try {
@@ -544,7 +544,7 @@ async function confirmDelete() {
       action: 'deleteKnowledge',
       login: currentUser,
       password: localStorage.getItem('hr_pass'),
-      rowId: pendingDeleteId
+      rowId: String(pendingDeleteId)  // завжди рядок
     };
     const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
     const result = await res.json();
@@ -632,11 +632,22 @@ function renderKnowledge() {
           <span class="author-name">${author}</span>
         </div>
         <div class="kb-actions">
-          ${showDelete ? `<button class="btn-delete" onclick="askDelete('${rowId}', '${safeTitleJs}')">Видалити</button>` : ''}
-          <button class="btn-read" onclick="openModal('${safeUrl}', '${safeTitle}')">Читати</button>
+          ${showDelete ? `<button class="btn-delete" data-rowid="${rowId}" data-title="${safeTitle}">Видалити</button>` : ''}
+          <button class="btn-read" data-url="${safeUrl}" data-title="${safeTitle}">Читати</button>
         </div>
       </div>
     `;
+
+    // Вішаємо події через JS, а не onclick — безпечно для будь-яких символів
+    if (showDelete) {
+      card.querySelector('.btn-delete').addEventListener('click', function() {
+        askDelete(this.dataset.rowid, title);
+      });
+    }
+    card.querySelector('.btn-read').addEventListener('click', function() {
+      openModal(url, title);
+    });
+
     container.appendChild(card);
   });
 }
