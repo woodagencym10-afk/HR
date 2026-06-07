@@ -116,7 +116,7 @@
     font-size: 18px;
     font-weight: 600;
     color: var(--ink);
-    min-width: 150px;
+    min-width: 170px;
     text-align: center;
     text-transform: capitalize;
   }
@@ -176,7 +176,6 @@
     font-weight: 700;
   }
 
-  /* Add button inside cell */
   .cell-add-btn {
     position: absolute;
     top: 6px; right: 6px;
@@ -188,7 +187,7 @@
     font-size: 16px;
     line-height: 1;
     cursor: pointer;
-    opacity: 0; /* Hidden by default */
+    opacity: 0;
     transition: opacity 0.2s;
     display: flex; align-items: center; justify-content: center;
   }
@@ -212,7 +211,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+    transition: opacity 0.15s;
   }
+  .event-chip:hover { opacity: 0.8; }
 
   .event-vacation { background: var(--green-light); color: var(--green-text); border: 1px solid #bbf7d0; }
   .event-dayoff { background: var(--orange-light); color: var(--orange-text); border: 1px solid #fde68a; }
@@ -231,10 +232,7 @@
     transition: opacity 0.2s;
   }
 
-  .modal-overlay.active {
-    opacity: 1;
-    pointer-events: all;
-  }
+  .modal-overlay.active { opacity: 1; pointer-events: all; }
 
   .modal-card {
     background: var(--white);
@@ -260,7 +258,7 @@
     background: none; border: none; font-size: 20px; cursor: pointer; color: var(--ink-light);
   }
 
-  .field { margin-bottom: 16px; }
+  .field { margin-bottom: 14px; }
   .field label {
     display: block; font-size: 12px; font-weight: 500; color: var(--ink-light); margin-bottom: 6px;
   }
@@ -272,6 +270,8 @@
   }
   
   .field select:focus, .field input:focus { border-color: var(--blue); background: var(--white); }
+  
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .btn-submit {
     width: 100%; height: 44px; background: var(--blue); color: white; border: none;
@@ -279,6 +279,7 @@
     cursor: pointer; transition: background 0.2s; margin-top: 8px;
   }
   .btn-submit:hover { background: var(--blue-dark); }
+  
   .btn-delete {
     width: 100%; height: 40px; background: none; color: var(--red); border: none;
     border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
@@ -290,7 +291,7 @@
     .calendar-grid { grid-template-columns: repeat(1, 1fr); }
     .day-name { display: none; }
     .calendar-cell { min-height: 80px; }
-    .cell-add-btn { opacity: 1; } /* Always show on mobile */
+    .cell-add-btn { opacity: 1; }
   }
 </style>
 </head>
@@ -318,7 +319,7 @@
     <div class="calendar-toolbar">
       <div class="month-nav">
         <button class="btn-icon" onclick="changeMonth(-1)">❮</button>
-        <div class="month-title" id="month-year-label">Вересень 2023</div>
+        <div class="month-title" id="month-year-label">—</div>
         <button class="btn-icon" onclick="changeMonth(1)">❯</button>
       </div>
       <button class="btn-icon" onclick="goToToday()" style="width: auto; padding: 0 12px; font-size: 13px; font-weight: 500;">Сьогодні</button>
@@ -334,8 +335,7 @@
       <div class="day-name" style="color: var(--red);">Нд</div>
     </div>
 
-    <div class="calendar-grid" id="calendar-body">
-      </div>
+    <div class="calendar-grid" id="calendar-body"></div>
   </div>
 </div>
 
@@ -347,25 +347,31 @@
     </div>
     <form id="event-form" onsubmit="saveEvent(event)">
       <input type="hidden" id="event-id">
-      
-      <div class="field">
-        <label>Дата</label>
-        <input type="date" id="event-date" required>
-      </div>
 
       <div class="field">
         <label>Тип відсутності</label>
-        <select id="event-type" required>
+        <select id="event-type" required onchange="toggleDateRange()">
           <option value="vacation">🌴 Відпустка</option>
           <option value="dayoff">🛋️ Вихідний</option>
         </select>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Дата початку</label>
+          <input type="date" id="event-start-date" required onchange="syncEndDate()">
+        </div>
+        <div class="field" id="end-date-field">
+          <label>Дата закінчення</label>
+          <input type="date" id="event-end-date" required>
+        </div>
       </div>
 
       <div class="field">
         <label>Працівник</label>
         <select id="event-employee" required>
           <option value="">Оберіть працівника...</option>
-          </select>
+        </select>
       </div>
 
       <button type="submit" class="btn-submit">Зберегти</button>
@@ -383,26 +389,22 @@ let currentDate = new Date();
 let employees = [];
 let events = [];
 
-// Localization for months
 const months = [
   "Січень", "Лютий", "Березень", "Квітень", "Травень", "Червень",
   "Липень", "Серпень", "Вересень", "Жовтень", "Листопад", "Грудень"
 ];
 
-// Initialize
 window.onload = () => {
   loadData();
   renderCalendar();
 };
 
 function loadData() {
-  // Load employees from the cache saved by the main page
   const cachedEmp = localStorage.getItem('hr_employees_cache');
   if (cachedEmp) {
     employees = JSON.parse(cachedEmp).filter(e => e.status === 'Активний');
   }
 
-  // Populate employee select
   const select = document.getElementById('event-employee');
   employees.forEach(emp => {
     const opt = document.createElement('option');
@@ -411,12 +413,24 @@ function loadData() {
     select.appendChild(opt);
   });
 
-  // Load events (Mocking DB with localStorage for now)
-  // В майбутньому тут можна зробити fetch(API_URL) як на головній
   const cachedEvents = localStorage.getItem('hr_events_cache');
   if (cachedEvents) {
     events = JSON.parse(cachedEvents);
   }
+}
+
+// Перевірка, чи потрапляє конкретний день у проміжок дат події
+function getEventsForDate(dateStr) {
+  const checkDate = new Date(dateStr);
+  checkDate.setHours(0,0,0,0);
+
+  return events.filter(evt => {
+    const start = new Date(evt.startDate);
+    start.setHours(0,0,0,0);
+    const end = new Date(evt.endDate);
+    end.setHours(0,0,0,0);
+    return checkDate >= start && checkDate <= end;
+  });
 }
 
 function renderCalendar() {
@@ -425,36 +439,31 @@ function renderCalendar() {
   
   document.getElementById('month-year-label').textContent = `${months[month]} ${year}`;
   
-  const firstDayIndex = new Date(year, month, 1).getDay(); // 0(Sun) to 6(Sat)
+  const firstDayIndex = new Date(year, month, 1).getDay();
   const lastDay = new Date(year, month + 1, 0).getDate();
   
-  // Adjust so Monday is the first day of the week
   const startDay = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
   
   const calendarBody = document.getElementById('calendar-body');
   calendarBody.innerHTML = '';
   
-  // Today's date for highlighting
   const today = new Date();
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
   const todayDate = today.getDate();
 
-  // Previous month empty cells
   for (let i = 0; i < startDay; i++) {
     const cell = document.createElement('div');
     cell.className = 'calendar-cell empty';
     calendarBody.appendChild(cell);
   }
 
-  // Days of the month
   for (let i = 1; i <= lastDay; i++) {
     const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
     const cell = document.createElement('div');
     cell.className = 'calendar-cell';
     if (isCurrentMonth && i === todayDate) cell.classList.add('today');
 
-    // Day events
-    const dayEvents = events.filter(e => e.date === dateString);
+    const dayEvents = getEventsForDate(dateString);
     let eventsHtml = '<div class="event-list">';
     dayEvents.forEach(evt => {
       const typeClass = evt.type === 'vacation' ? 'event-vacation' : 'event-dayoff';
@@ -481,33 +490,55 @@ function goToToday() {
   renderCalendar();
 }
 
-// ── Modal Logic ──
+// Сховати/показати дату закінчення залежно від типу події
+function toggleDateRange() {
+  const type = document.getElementById('event-type').value;
+  const endDateField = document.getElementById('end-date-field');
+  if (type === 'dayoff') {
+    // Якщо вихідний — дату закінчення ховаємо, вона буде дорівнювати даті початку
+    endDateField.style.opacity = '0.4';
+    syncEndDate();
+  } else {
+    endDateField.style.opacity = '1';
+  }
+}
+
+function syncEndDate() {
+  const type = document.getElementById('event-type').value;
+  if (type === 'dayoff') {
+    document.getElementById('event-end-date').value = document.getElementById('event-start-date').value;
+  }
+}
+
 const modal = document.getElementById('event-modal');
 const form = document.getElementById('event-form');
 
 function openModal(dateStr) {
   form.reset();
   document.getElementById('event-id').value = '';
-  document.getElementById('event-date').value = dateStr;
+  document.getElementById('event-start-date').value = dateStr;
+  document.getElementById('event-end-date').value = dateStr;
   document.getElementById('modal-title').textContent = 'Додати подію';
   document.getElementById('btn-delete').style.display = 'none';
+  document.getElementById('event-type').value = 'vacation'; // Дефолт - відпустка
+  toggleDateRange();
   modal.classList.add('active');
 }
 
-function closeModal() {
-  modal.classList.remove('active');
-}
+function closeModal() { modal.classList.remove('active'); }
 
 function editEvent(id, e) {
-  e.stopPropagation(); // Prevent triggering cell click
+  e.stopPropagation();
   const evt = events.find(x => x.id === id);
   if (!evt) return;
 
   document.getElementById('event-id').value = evt.id;
-  document.getElementById('event-date').value = evt.date;
+  document.getElementById('event-start-date').value = evt.startDate;
+  document.getElementById('event-end-date').value = evt.endDate;
   document.getElementById('event-type').value = evt.type;
   document.getElementById('event-employee').value = evt.employee;
   
+  toggleDateRange();
   document.getElementById('modal-title').textContent = 'Редагувати подію';
   document.getElementById('btn-delete').style.display = 'block';
   modal.classList.add('active');
@@ -517,22 +548,28 @@ function saveEvent(e) {
   e.preventDefault();
   
   const id = document.getElementById('event-id').value || Date.now().toString();
-  const date = document.getElementById('event-date').value;
+  const startDate = document.getElementById('event-start-date').value;
   const type = document.getElementById('event-type').value;
   const employee = document.getElementById('event-employee').value;
+  
+  // Якщо вибрано "вихідний", дата закінчення дорівнює даті початку
+  const endDate = type === 'dayoff' ? startDate : document.getElementById('event-end-date').value;
 
-  const eventIndex = events.findIndex(x => x.id === id);
-  const newEvent = { id, date, type, employee };
-
-  if (eventIndex > -1) {
-    events[eventIndex] = newEvent; // Update
-  } else {
-    events.push(newEvent); // Add new
+  if (new Date(endDate) < new Date(startDate)) {
+    alert('Помилка: Дата закінчення не може бути раніше дати початку!');
+    return;
   }
 
-  // Save to storage
+  const eventIndex = events.findIndex(x => x.id === id);
+  const newEvent = { id, startDate, endDate, type, employee };
+
+  if (eventIndex > -1) {
+    events[eventIndex] = newEvent;
+  } else {
+    events.push(newEvent);
+  }
+
   localStorage.setItem('hr_events_cache', JSON.stringify(events));
-  
   closeModal();
   renderCalendar();
 }
