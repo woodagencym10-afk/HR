@@ -82,9 +82,7 @@
   .main-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
 
   /* search */
-  .search-bar {
-    position: relative; margin-bottom: 20px;
-  }
+  .search-bar { position: relative; margin-bottom: 20px; }
 
   .search-icon {
     position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
@@ -152,10 +150,12 @@
     justify-content: space-between;
     border-top: 1px solid var(--border);
     padding-top: 14px;
+    gap: 8px;
   }
 
   .kb-author {
     display: flex; align-items: center; gap: 8px;
+    flex: 1; min-width: 0;
   }
 
   .author-avatar {
@@ -165,9 +165,15 @@
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
   }
 
-  .author-name { font-size: 12px; color: var(--ink-light); font-weight: 500; }
+  .author-name {
+    font-size: 12px; color: var(--ink-light); font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .kb-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
   .btn-read {
     padding: 7px 16px;
@@ -180,6 +186,19 @@
   }
 
   .btn-read:hover { background: var(--blue); }
+
+  .btn-delete {
+    padding: 7px 12px;
+    background: var(--red-light);
+    color: var(--red);
+    border: none; border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn-delete:hover { background: var(--red); color: white; }
 
   .empty-state {
     grid-column: 1/-1;
@@ -297,6 +316,63 @@
     z-index: 0;
   }
 
+  /* CONFIRM MODAL */
+  .confirm-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 200; align-items: center; justify-content: center;
+    padding: 20px; backdrop-filter: blur(4px);
+  }
+
+  .confirm-overlay.open { display: flex; }
+
+  .confirm-box {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 28px;
+    max-width: 380px; width: 100%;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+    text-align: center;
+  }
+
+  .confirm-icon {
+    font-size: 32px; margin-bottom: 12px;
+  }
+
+  .confirm-title {
+    font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 8px;
+  }
+
+  .confirm-msg {
+    font-size: 13px; color: var(--ink-light); line-height: 1.5; margin-bottom: 22px;
+  }
+
+  .confirm-title-name {
+    font-weight: 600; color: var(--ink);
+  }
+
+  .confirm-actions { display: flex; gap: 10px; }
+
+  .btn-cancel {
+    flex: 1; height: 42px;
+    background: var(--bg); color: var(--ink-mid);
+    border: 1px solid var(--border); border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+
+  .btn-cancel:hover { border-color: #D1D5DB; background: #EDEFF2; }
+
+  .btn-confirm-delete {
+    flex: 1; height: 42px;
+    background: var(--red); color: white;
+    border: none; border-radius: 10px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+  }
+
+  .btn-confirm-delete:hover { background: #DC2626; }
+
   @media (max-width: 900px) {
     .main-layout { grid-template-columns: 1fr; }
     .form-card { position: static; }
@@ -359,7 +435,7 @@
   </div>
 </div>
 
-<!-- MODAL -->
+<!-- DOC MODAL -->
 <div id="doc-modal" class="modal-overlay" onclick="handleModalClick(event)">
   <div class="modal-box">
     <div class="modal-header">
@@ -373,11 +449,44 @@
   </div>
 </div>
 
+<!-- CONFIRM DELETE MODAL -->
+<div id="confirm-modal" class="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">Видалити статтю?</div>
+    <div class="confirm-msg">
+      Ви впевнені, що хочете видалити статтю<br>
+      <span class="confirm-title-name" id="confirm-article-name"></span>?<br><br>
+      Цю дію неможливо скасувати.
+    </div>
+    <div class="confirm-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Скасувати</button>
+      <button class="btn-confirm-delete" onclick="confirmDelete()">Видалити</button>
+    </div>
+  </div>
+</div>
+
 <script>
 if (!localStorage.getItem('hr_logged')) window.location.href = 'login.html';
 
 const API_URL = 'https://script.google.com/macros/s/AKfycbwsQpX-LFQxVKv1Pr1a5uHlR41Iuvh2p5cNQ2Ef1CEWjEuhuOvrmNxIVe5Oy3Wpp8r3Lg/exec';
+
 let allKnowledge = [];
+let pendingDeleteId = null;
+let pendingDeleteTitle = '';
+
+// --- Роль поточного юзера ---
+// Очікуємо що в localStorage є hr_role зі значеннями: 'admin', 'owner', або будь-що інше (звичайний юзер)
+const currentUser = localStorage.getItem('hr_user') || '';
+const currentRole = (localStorage.getItem('hr_role') || '').toLowerCase();
+const isPrivileged = currentRole === 'admin' || currentRole === 'owner';
+
+function canDelete(authorLogin) {
+  // Адмін і овнер видаляють все
+  if (isPrivileged) return true;
+  // Звичайний юзер — тільки своє
+  return authorLogin && authorLogin.toLowerCase() === currentUser.toLowerCase();
+}
 
 function showLoading(v) { document.getElementById('loading').style.display = v ? 'block' : 'none'; }
 function logout() { localStorage.clear(); window.location.href = 'login.html'; }
@@ -410,6 +519,49 @@ function closeModal() {
 
 function handleModalClick(e) { if (e.target === document.getElementById('doc-modal')) closeModal(); }
 
+// --- Підтвердження видалення ---
+function askDelete(rowId, title) {
+  pendingDeleteId = rowId;
+  pendingDeleteTitle = title;
+  document.getElementById('confirm-article-name').textContent = '"' + title + '"';
+  document.getElementById('confirm-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeConfirm() {
+  pendingDeleteId = null;
+  pendingDeleteTitle = '';
+  document.getElementById('confirm-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId) return;
+  closeConfirm();
+  showLoading(true);
+  try {
+    const payload = {
+      action: 'deleteKnowledge',
+      login: currentUser,
+      password: localStorage.getItem('hr_pass'),
+      rowId: pendingDeleteId
+    };
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+    const result = await res.json();
+    if (result.success) {
+      localStorage.removeItem('hr_knowledge_cache');
+      await loadKnowledge();
+    } else {
+      alert('Помилка видалення: ' + (result.error || 'Unknown error'));
+    }
+  } catch(err) {
+    console.error(err);
+    alert('Помилка сервера');
+  }
+  showLoading(false);
+}
+
+// --- Завантаження ---
 window.onload = loadKnowledge;
 
 async function loadKnowledge() {
@@ -425,7 +577,10 @@ async function loadKnowledge() {
       allKnowledge = result.data || [];
       localStorage.setItem('hr_knowledge_cache', JSON.stringify(allKnowledge));
       renderKnowledge();
-    } else { localStorage.clear(); window.location.href = 'login.html'; }
+    } else {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    }
   } catch(e) {
     console.error(e);
     if (!cached) document.getElementById('kb-container').innerHTML = `<div class="empty-state">Помилка завантаження даних</div>`;
@@ -453,8 +608,15 @@ function renderKnowledge() {
     const title = item['Назва статті'] || '';
     const url = item['Посилання на Google Doc'] || '';
     const author = item['Автор (хто додав)'] || 'HR';
+    // rowId — унікальний ідентифікатор рядка у Google Sheets (передається як 'id' або 'rowId')
+    const rowId = item['id'] || item['rowId'] || '';
+
     const safeTitle = title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
     const safeUrl = url.replace(/'/g, "\\'");
+    const safeTitleJs = title.replace(/'/g, "\\'");
+
+    // Чи показувати кнопку видалення
+    const showDelete = canDelete(author);
 
     const card = document.createElement('div');
     card.className = 'kb-card';
@@ -469,7 +631,10 @@ function renderKnowledge() {
           <div class="author-avatar">${getInitials(author)}</div>
           <span class="author-name">${author}</span>
         </div>
-        <button class="btn-read" onclick="openModal('${safeUrl}', '${safeTitle}')">Читати</button>
+        <div class="kb-actions">
+          ${showDelete ? `<button class="btn-delete" onclick="askDelete('${rowId}', '${safeTitleJs}')">Видалити</button>` : ''}
+          <button class="btn-read" onclick="openModal('${safeUrl}', '${safeTitle}')">Читати</button>
+        </div>
       </div>
     `;
     container.appendChild(card);
@@ -490,15 +655,20 @@ async function submitKbForm(e) {
     author: localStorage.getItem('hr_user')
   };
   try {
-    const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(payload) });
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
     const result = await res.json();
     if (result.success) {
       document.getElementById('kb-form').reset();
       localStorage.removeItem('hr_knowledge_cache');
       await loadKnowledge();
       alert('Статтю додано');
-    } else { alert('Помилка: ' + (result.error || 'Unknown error')); }
-  } catch(err) { console.error(err); alert('Помилка сервера'); }
+    } else {
+      alert('Помилка: ' + (result.error || 'Unknown error'));
+    }
+  } catch(err) {
+    console.error(err);
+    alert('Помилка сервера');
+  }
   showLoading(false);
 }
 </script>
