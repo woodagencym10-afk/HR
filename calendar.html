@@ -297,6 +297,7 @@
 </head>
 <body>
 
+<!-- HEADER -->
 <header class="header">
   <div class="logo-icon">HR</div>
   <div class="logo-text">Portal</div>
@@ -310,6 +311,7 @@
   </div>
 </header>
 
+<!-- PAGE -->
 <div class="page">
   <div class="page-header">
     <div class="page-title">Відпустки та Вихідні</div>
@@ -325,6 +327,7 @@
       <button class="btn-icon" onclick="goToToday()" style="width: auto; padding: 0 12px; font-size: 13px; font-weight: 500;">Сьогодні</button>
     </div>
 
+    <!-- Calendar Header -->
     <div class="calendar-grid" id="calendar-header">
       <div class="day-name">Пн</div>
       <div class="day-name">Вт</div>
@@ -335,10 +338,12 @@
       <div class="day-name" style="color: var(--red);">Нд</div>
     </div>
 
+    <!-- Calendar Body -->
     <div class="calendar-grid" id="calendar-body"></div>
   </div>
 </div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="event-modal">
   <div class="modal-card">
     <div class="modal-header">
@@ -351,8 +356,9 @@
       <div class="field">
         <label>Тип відсутності</label>
         <select id="event-type" required onchange="toggleDateRange()">
-          <option value="vacation">🌴 Відпустка</option>
+          <!-- Тепер Вихідний на першому місці -->
           <option value="dayoff">🛋️ Вихідний</option>
+          <option value="vacation">🌴 Відпустка</option>
         </select>
       </div>
 
@@ -495,7 +501,6 @@ function toggleDateRange() {
   const type = document.getElementById('event-type').value;
   const endDateField = document.getElementById('end-date-field');
   if (type === 'dayoff') {
-    // Якщо вихідний — дату закінчення ховаємо, вона буде дорівнювати даті початку
     endDateField.style.opacity = '0.4';
     syncEndDate();
   } else {
@@ -520,7 +525,10 @@ function openModal(dateStr) {
   document.getElementById('event-end-date').value = dateStr;
   document.getElementById('modal-title').textContent = 'Додати подію';
   document.getElementById('btn-delete').style.display = 'none';
-  document.getElementById('event-type').value = 'vacation'; // Дефолт - відпустка
+  
+  // Дефолт - вихідний
+  document.getElementById('event-type').value = 'dayoff'; 
+  
   toggleDateRange();
   modal.classList.add('active');
 }
@@ -552,7 +560,6 @@ function saveEvent(e) {
   const type = document.getElementById('event-type').value;
   const employee = document.getElementById('event-employee').value;
   
-  // Якщо вибрано "вихідний", дата закінчення дорівнює даті початку
   const endDate = type === 'dayoff' ? startDate : document.getElementById('event-end-date').value;
 
   if (new Date(endDate) < new Date(startDate)) {
