@@ -27,321 +27,215 @@
     --white: #FFFFFF;
   }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    min-height: 100vh;
-  }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
-  /* ── HEADER ── */
+  /* HEADER */
   .header {
-    background: var(--white);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    height: 64px;
-    gap: 24px;
-    position: sticky;
-    top: 0;
-    z-index: 50;
+    background: var(--white); border-bottom: 1px solid var(--border);
+    padding: 0 24px; display: flex; align-items: center; height: 64px;
+    gap: 24px; position: sticky; top: 0; z-index: 50;
   }
-
   .logo-icon {
-    width: 36px; height: 36px;
-    background: var(--blue);
-    border-radius: 10px;
+    width: 36px; height: 36px; background: var(--blue); border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; color: white;
-    flex-shrink: 0;
+    font-size: 13px; font-weight: 700; color: white; flex-shrink: 0;
   }
-
-  .logo-text {
-    font-size: 17px; font-weight: 700; color: var(--ink);
-    margin-right: 8px;
-  }
-
+  .logo-text { font-size: 17px; font-weight: 700; color: var(--ink); margin-right: 8px; }
   .nav { display: flex; gap: 4px; }
-
   .nav-btn {
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 14px; font-weight: 500;
-    color: var(--ink-light);
-    background: none; border: none;
-    cursor: pointer; text-decoration: none;
-    transition: all 0.15s;
-    font-family: 'Inter', sans-serif;
+    padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: 500;
+    color: var(--ink-light); background: none; border: none; cursor: pointer;
+    text-decoration: none; transition: all 0.15s; font-family: 'Inter', sans-serif;
   }
-
   .nav-btn:hover { background: var(--bg); color: var(--ink); }
-
-  .nav-btn.active {
-    background: var(--blue-light);
-    color: var(--blue);
-  }
-
+  .nav-btn.active { background: var(--blue-light); color: var(--blue); }
   .nav-btn.danger { color: var(--red); }
   .nav-btn.danger:hover { background: var(--red-light); }
-
   .header-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-
   .loading-chip {
-    display: none;
-    font-size: 12px; font-weight: 500;
-    color: var(--blue);
-    background: var(--blue-light);
-    padding: 4px 12px;
-    border-radius: 20px;
+    display: none; font-size: 12px; font-weight: 500; color: var(--blue);
+    background: var(--blue-light); padding: 4px 12px; border-radius: 20px;
   }
 
-  /* ── PAGE ── */
+  /* PAGE */
   .page { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
-
   .page-title { font-size: 22px; font-weight: 700; color: var(--ink); margin-bottom: 20px; }
 
-  /* stats row */
+  /* STATS */
   .stats-row { display: flex; gap: 12px; margin-bottom: 24px; }
-
   .stat-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 16px 20px;
-    min-width: 100px;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 20px; min-width: 100px;
   }
-
-  .stat-num {
-    font-size: 26px; font-weight: 700; line-height: 1;
-    margin-bottom: 4px;
-  }
-
+  .stat-num { font-size: 26px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
   .stat-num.blue { color: var(--blue); }
   .stat-num.green { color: var(--green); }
   .stat-num.red { color: var(--red); }
+  .stat-label { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; color: var(--ink-light); text-transform: uppercase; }
 
-  .stat-label {
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 0.5px;
-    color: var(--ink-light);
-    text-transform: uppercase;
-  }
-
-  /* main layout */
-  .main-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; }
+  /* LAYOUT */
+  .main-layout { display: grid; grid-template-columns: 1fr 370px; gap: 20px; }
 
   /* TABLE CARD */
-  .table-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-  }
-
+  .table-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
   .table-toolbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    gap: 12px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap;
   }
-
   .tabs { display: flex; gap: 4px; }
-
   .tab {
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 13px; font-weight: 500;
-    color: var(--ink-light);
-    background: none; border: none;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    transition: all 0.15s;
+    padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    color: var(--ink-light); background: none; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.15s;
   }
-
   .tab:hover { background: var(--bg); color: var(--ink); }
-
   .tab.active { background: var(--blue-light); color: var(--blue); font-weight: 600; }
-
   .search-input {
-    height: 36px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 13px;
-    color: var(--ink);
-    outline: none;
-    width: 200px;
+    height: 36px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0 14px; font-family: 'Inter', sans-serif;
+    font-size: 13px; color: var(--ink); outline: none; width: 200px;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-
-  .search-input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-    background: var(--white);
-  }
-
+  .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); background: var(--white); }
   .search-input::placeholder { color: #9CA3AF; }
 
-  /* employee list */
+  /* EMP LIST */
   .emp-list { padding: 8px 0; }
-
   .emp-row {
-    display: flex;
-    align-items: center;
-    padding: 12px 20px;
-    gap: 14px;
-    transition: background 0.12s;
-    cursor: pointer;
-    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 12px 20px; gap: 14px;
+    transition: background 0.12s; cursor: pointer; border-bottom: 1px solid var(--border);
   }
-
   .emp-row:last-child { border-bottom: none; }
   .emp-row:hover { background: var(--bg); }
-
   .emp-avatar {
-    width: 38px; height: 38px;
-    border-radius: 50%;
+    width: 38px; height: 38px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 600;
-    flex-shrink: 0;
-    color: white;
+    font-size: 13px; font-weight: 600; flex-shrink: 0; color: white;
   }
-
   .emp-info { flex: 1; min-width: 0; }
-
   .emp-name { font-size: 15px; font-weight: 600; color: var(--ink); }
-
   .emp-sub { font-size: 12px; color: var(--ink-light); margin-top: 1px; }
-
-  .status-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px; font-weight: 600;
-    flex-shrink: 0;
+  .emp-tags { display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap; }
+  .emp-tag {
+    font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 6px;
+    background: var(--bg); color: var(--ink-light); border: 1px solid var(--border);
+    white-space: nowrap;
   }
-
+  .emp-tag.rate  { background: #FFF7ED; color: #C2410C; border-color: #FED7AA; }
+  .emp-tag.sched { background: #F0FDF4; color: #15803D; border-color: #BBF7D0; }
+  .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; flex-shrink: 0; }
   .badge-active { background: var(--green-light); color: var(--green-text); }
-  .badge-fired { background: var(--red-light); color: var(--red-text); }
-
+  .badge-fired  { background: var(--red-light);   color: var(--red-text); }
   .emp-btn {
-    font-size: 12px; font-weight: 500;
-    color: var(--blue);
-    background: none; border: none;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background 0.15s;
-    flex-shrink: 0;
+    font-size: 12px; font-weight: 500; color: var(--blue);
+    background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif;
+    padding: 4px 8px; border-radius: 6px; transition: background 0.15s; flex-shrink: 0;
   }
-
   .emp-btn:hover { background: var(--blue-light); }
-
   .emp-doc-btn {
-    font-size: 12px; font-weight: 500;
-    color: var(--ink-light);
-    text-decoration: none;
-    padding: 4px 8px;
-    border-radius: 6px;
-    transition: background 0.15s;
-    flex-shrink: 0;
+    font-size: 12px; font-weight: 500; color: var(--ink-light); text-decoration: none;
+    padding: 4px 8px; border-radius: 6px; transition: background 0.15s; flex-shrink: 0;
   }
-
   .emp-doc-btn:hover { background: var(--bg); color: var(--ink); }
-
-  .empty-state {
-    padding: 60px 20px;
-    text-align: center;
-    color: var(--ink-light);
-    font-size: 14px;
-  }
+  .empty-state { padding: 60px 20px; text-align: center; color: var(--ink-light); font-size: 14px; }
 
   /* FORM CARD */
   .form-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    height: fit-content;
-    position: sticky;
-    top: 84px;
+    background: var(--white); border: 1px solid var(--border); border-radius: 16px;
+    padding: 24px; height: fit-content; position: sticky; top: 84px;
   }
-
-  .form-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-  }
-
+  .form-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .form-title { font-size: 16px; font-weight: 700; color: var(--ink); }
-
   .btn-cancel-edit {
-    font-size: 12px; font-weight: 500;
-    color: var(--red);
-    background: none; border: none;
-    cursor: pointer;
-    font-family: 'Inter', sans-serif;
-    display: none;
+    font-size: 12px; font-weight: 500; color: var(--red);
+    background: none; border: none; cursor: pointer; font-family: 'Inter', sans-serif; display: none;
   }
-
+  .form-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--ink-light); margin: 18px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
   .field { margin-bottom: 14px; }
-
-  .field label {
-    display: block;
-    font-size: 12px; font-weight: 500;
-    color: var(--ink-light);
-    margin-bottom: 5px;
+  .field label { display: block; font-size: 12px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+  .field input, .field select {
+    width: 100%; height: 42px; background: var(--bg); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 0 12px; font-family: 'Inter', sans-serif;
+    font-size: 14px; color: var(--ink); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none; -webkit-appearance: none;
   }
-
-  .field input {
-    width: 100%;
-    height: 42px;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 0 12px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    color: var(--ink);
-    outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+    padding-right: 36px; cursor: pointer;
   }
-
-  .field input:focus {
-    border-color: var(--blue);
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-    background: var(--white);
+  .field input:focus, .field select:focus {
+    border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); background: var(--white);
   }
-
   .field input::placeholder { color: #9CA3AF; }
   .field input[readonly] { cursor: default; background: var(--bg); }
-
   .status-active-field { color: var(--green-text) !important; font-weight: 600 !important; }
-  .status-fired-field { color: var(--red-text) !important; font-weight: 600 !important; }
-
+  .status-fired-field  { color: var(--red-text)   !important; font-weight: 600 !important; }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .btn-submit {
-    width: 100%;
-    height: 44px;
-    background: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-top: 8px;
+  .input-suffix-wrap { position: relative; }
+  .input-suffix-wrap input { padding-right: 52px; }
+  .input-suffix {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; font-weight: 500; color: var(--ink-light); pointer-events: none;
   }
 
+  /* ── SCHEDULE BUILDER ── */
+  .schedule-builder {
+    border: 1.5px solid var(--border); border-radius: 12px;
+    overflow: hidden; background: var(--bg);
+  }
+  .schedule-builder.focused { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+  /* рядки */
+  .sb-row {
+    display: flex; align-items: center; gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+  }
+  .sb-row:last-child { border-bottom: none; }
+  .sb-row-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase;
+    color: var(--ink-light); padding: 0 12px; white-space: nowrap; flex-shrink: 0;
+    min-width: 56px;
+  }
+  .sb-divider { width: 1px; height: 42px; background: var(--border); flex-shrink: 0; }
+
+  /* чіпи */
+  .sb-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; flex: 1; }
+  .sb-chip {
+    padding: 5px 12px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--border);
+    background: var(--bg); color: var(--ink-light);
+    transition: all 0.15s; user-select: none; white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+  }
+  .sb-chip:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+  .sb-chip.selected { background: var(--blue); border-color: var(--blue); color: white; }
+
+  /* рядок "субота" — з'являється лише коли вибрано 5/2 */
+  .sb-saturday-row { display: none; }
+
+  /* результат */
+  .sb-result {
+    background: var(--bg); padding: 8px 12px;
+    font-size: 13px; font-weight: 500; color: var(--ink-mid);
+    border-top: 1px solid var(--border);
+    min-height: 36px; display: flex; align-items: center; gap: 6px;
+  }
+  .sb-result-label { font-size: 11px; font-weight: 600; color: var(--ink-light); letter-spacing: 0.4px; text-transform: uppercase; flex-shrink: 0; }
+  .sb-result-val { color: var(--ink); }
+  .sb-result-empty { color: var(--ink-light); font-style: italic; font-weight: 400; }
+  /* прихований input */
+  #workSchedule { display: none; }
+
+  .btn-submit {
+    width: 100%; height: 44px; background: var(--blue); color: white; border: none;
+    border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background 0.2s; margin-top: 8px;
+  }
   .btn-submit:hover { background: var(--blue-dark); }
 
   @media (max-width: 900px) {
@@ -349,21 +243,17 @@
     .form-card { position: static; }
     .stats-row { flex-wrap: wrap; }
   }
-
   @media (max-width: 600px) {
-    .page { padding: 16px; }
-    .header { padding: 0 16px; }
-    .logo-text { display: none; }
+    .page { padding: 16px; } .header { padding: 0 16px; } .logo-text { display: none; }
   }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="logo-icon">HR</div>
   <div class="logo-text">Portal</div>
- <nav class="nav">
+  <nav class="nav">
     <a href="index.html" class="nav-btn active">Працівники</a>
     <a href="calendar.html" class="nav-btn">Календар</a>
     <a href="knowledge.html" class="nav-btn">База знань</a>
@@ -374,24 +264,13 @@
   </div>
 </header>
 
-<!-- PAGE -->
 <div class="page">
   <div class="page-title">Картки обліку працівників</div>
 
-  <!-- STATS -->
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-num blue" id="stat-total">—</div>
-      <div class="stat-label">Всього</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num green" id="stat-active">—</div>
-      <div class="stat-label">Активні</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num red" id="stat-fired">—</div>
-      <div class="stat-label">Звільнені</div>
-    </div>
+    <div class="stat-card"><div class="stat-num blue" id="stat-total">—</div><div class="stat-label">Всього</div></div>
+    <div class="stat-card"><div class="stat-num green" id="stat-active">—</div><div class="stat-label">Активні</div></div>
+    <div class="stat-card"><div class="stat-num red" id="stat-fired">—</div><div class="stat-label">Звільнені</div></div>
   </div>
 
   <div class="main-layout">
@@ -401,8 +280,8 @@
       <div class="table-toolbar">
         <div class="tabs">
           <button class="tab active" id="tab-active" onclick="changeFilter('Активні')">Активні</button>
-          <button class="tab" id="tab-fired" onclick="changeFilter('Звільнені')">Звільнені</button>
-          <button class="tab" id="tab-all" onclick="changeFilter('Всі')">Всі</button>
+          <button class="tab" id="tab-fired"  onclick="changeFilter('Звільнені')">Звільнені</button>
+          <button class="tab" id="tab-all"    onclick="changeFilter('Всі')">Всі</button>
         </div>
         <input type="text" class="search-input" id="search-input" oninput="renderTable()" placeholder="Пошук за ПІБ або відділом...">
       </div>
@@ -462,6 +341,70 @@
           <input type="url" id="folderUrl" placeholder="https://drive.google.com/...">
         </div>
 
+        <!-- ОПЛАТА ТА УМОВИ -->
+        <div class="form-section-label">Оплата та умови</div>
+
+        <div class="field-row">
+          <div class="field">
+            <label>Ставка (грн/міс)</label>
+            <div class="input-suffix-wrap">
+              <input type="number" id="rate" min="0" step="100" placeholder="25000">
+              <span class="input-suffix">₴</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Картка для виплат</label>
+            <input type="text" id="paymentCard" placeholder="1234 5678 9012 3456" maxlength="22">
+          </div>
+        </div>
+
+        <!-- SCHEDULE BUILDER -->
+        <div class="field">
+          <label>Графік роботи</label>
+          <input type="hidden" id="workSchedule">
+
+          <div class="schedule-builder" id="schedule-builder">
+
+            <!-- РЯДОК 1: дні -->
+            <div class="sb-row">
+              <span class="sb-row-label">Дні</span>
+              <div class="sb-divider"></div>
+              <div class="sb-chips" id="sb-days">
+                <span class="sb-chip" data-group="days" data-val="5/2" onclick="sbSelect(this)">5/2</span>
+                <span class="sb-chip" data-group="days" data-val="Аутсорс" onclick="sbSelect(this)">Аутсорс</span>
+              </div>
+            </div>
+
+            <!-- РЯДОК 2: час -->
+            <div class="sb-row">
+              <span class="sb-row-label">Час</span>
+              <div class="sb-divider"></div>
+              <div class="sb-chips" id="sb-time">
+                <span class="sb-chip" data-group="time" data-val="9:00–18:00" onclick="sbSelect(this)">9:00–18:00</span>
+                <span class="sb-chip" data-group="time" data-val="10:00–19:00" onclick="sbSelect(this)">10:00–19:00</span>
+                <span class="sb-chip" data-group="time" data-val="8:00–17:00" onclick="sbSelect(this)">8:00–17:00</span>
+              </div>
+            </div>
+
+            <!-- РЯДОК 3: субота (лише для 5/2) -->
+            <div class="sb-row sb-saturday-row" id="sb-saturday-row">
+              <span class="sb-row-label">Субота</span>
+              <div class="sb-divider"></div>
+              <div class="sb-chips" id="sb-saturday">
+                <span class="sb-chip" data-group="saturday" data-val="+ 1 субота/міс" onclick="sbSelectOptional(this)">+ 1 субота в місяць</span>
+                <span class="sb-chip" data-group="saturday" data-val="+ 2 суботи/міс" onclick="sbSelectOptional(this)">+ 2 суботи в місяць</span>
+              </div>
+            </div>
+
+            <!-- РЕЗУЛЬТАТ -->
+            <div class="sb-result">
+              <span class="sb-result-label">Графік:</span>
+              <span id="sb-result-text" class="sb-result-empty">не обрано</span>
+            </div>
+
+          </div>
+        </div>
+
         <button type="submit" class="btn-submit" id="btn-submit">Зберегти картку</button>
       </form>
     </div>
@@ -483,17 +426,99 @@ function getAvatarColor(name) {
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
-
 function getInitials(name) {
   const parts = (name || '').trim().split(/\s+/);
   if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
   return (name || '?')[0].toUpperCase();
 }
-
 function showLoading(v) { document.getElementById('loading').style.display = v ? 'block' : 'none'; }
-
 function logout() { localStorage.clear(); window.location.href = 'login.html'; }
 
+// ── SCHEDULE BUILDER LOGIC ──
+const sbState = { days: '', time: '', saturday: '' };
+
+function sbSelect(chip) {
+  const group = chip.dataset.group;
+  const val   = chip.dataset.val;
+  // toggle off якщо вже вибрано
+  if (sbState[group] === val) {
+    sbState[group] = '';
+    chip.classList.remove('selected');
+  } else {
+    // знімаємо попередній
+    document.querySelectorAll(`.sb-chip[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+    sbState[group] = val;
+    chip.classList.add('selected');
+  }
+  // субота — лише при 5/2
+  const satRow = document.getElementById('sb-saturday-row');
+  if (group === 'days') {
+    if (val !== '5/2' || sbState.days === '') {
+      satRow.style.display = 'none';
+      // скидаємо суботу
+      sbState.saturday = '';
+      document.querySelectorAll('.sb-chip[data-group="saturday"]').forEach(c => c.classList.remove('selected'));
+    } else {
+      satRow.style.display = 'flex';
+    }
+  }
+  sbUpdateResult();
+}
+
+function sbSelectOptional(chip) {
+  const val = chip.dataset.val;
+  if (sbState.saturday === val) {
+    sbState.saturday = '';
+    chip.classList.remove('selected');
+  } else {
+    document.querySelectorAll('.sb-chip[data-group="saturday"]').forEach(c => c.classList.remove('selected'));
+    sbState.saturday = val;
+    chip.classList.add('selected');
+  }
+  sbUpdateResult();
+}
+
+function sbUpdateResult() {
+  const parts = [];
+  if (sbState.days)     parts.push(sbState.days);
+  if (sbState.time)     parts.push(sbState.time);
+  if (sbState.saturday) parts.push(sbState.saturday);
+  const result = parts.join(', ');
+  document.getElementById('workSchedule').value = result;
+  const el = document.getElementById('sb-result-text');
+  if (result) {
+    el.textContent = result;
+    el.className = 'sb-result-val';
+  } else {
+    el.textContent = 'не обрано';
+    el.className = 'sb-result-empty';
+  }
+}
+
+// встановлення графіку при редагуванні
+function sbSetValue(val) {
+  // скидаємо все
+  sbState.days = ''; sbState.time = ''; sbState.saturday = '';
+  document.querySelectorAll('.sb-chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('sb-saturday-row').style.display = 'none';
+  if (!val) { sbUpdateResult(); return; }
+  // шукаємо кожен чіп і вибираємо якщо значення міститься в рядку
+  document.querySelectorAll('.sb-chip').forEach(chip => {
+    if (val.includes(chip.dataset.val)) {
+      const g = chip.dataset.group;
+      if (!sbState[g]) { // беремо перший збіг
+        sbState[g] = chip.dataset.val;
+        chip.classList.add('selected');
+        if (g === 'days' && chip.dataset.val === '5/2') {
+          document.getElementById('sb-saturday-row').style.display = 'flex';
+        }
+      }
+    }
+  });
+  sbUpdateResult();
+}
+
+// ── DATA ──
 window.onload = loadEmployees;
 
 async function loadEmployees() {
@@ -501,7 +526,7 @@ async function loadEmployees() {
   if (cached) { allEmployees = JSON.parse(cached); renderTable(); updateStats(); }
   else showLoading(true);
   try {
-    const login = localStorage.getItem('hr_user');
+    const login    = localStorage.getItem('hr_user');
     const password = localStorage.getItem('hr_pass');
     const res = await fetch(API_URL + '?login=' + encodeURIComponent(login) + '&password=' + encodeURIComponent(password));
     const result = await res.json();
@@ -515,33 +540,38 @@ async function loadEmployees() {
 }
 
 function updateStats() {
-  document.getElementById('stat-total').textContent = allEmployees.length;
+  document.getElementById('stat-total').textContent  = allEmployees.length;
   document.getElementById('stat-active').textContent = allEmployees.filter(e => e.status === 'Активний').length;
-  document.getElementById('stat-fired').textContent = allEmployees.filter(e => e.status === 'Звільнений').length;
+  document.getElementById('stat-fired').textContent  = allEmployees.filter(e => e.status === 'Звільнений').length;
+}
+
+function formatRate(val) {
+  if (!val) return null;
+  const n = parseFloat(val);
+  if (isNaN(n)) return null;
+  return new Intl.NumberFormat('uk-UA').format(n) + ' ₴';
 }
 
 function renderTable() {
   const container = document.getElementById('employees-table-body');
   container.innerHTML = '';
   const q = document.getElementById('search-input').value.toLowerCase();
-
   const filtered = allEmployees.filter(emp => {
-    if (currentFilter === 'Активні' && emp.status !== 'Активний') return false;
+    if (currentFilter === 'Активні'   && emp.status !== 'Активний')  return false;
     if (currentFilter === 'Звільнені' && emp.status !== 'Звільнений') return false;
     return (emp.pib||'').toLowerCase().includes(q) || (emp.department||'').toLowerCase().includes(q);
   });
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state">Нікого не знайдено</div>`;
-    return;
-  }
+  if (!filtered.length) { container.innerHTML = `<div class="empty-state">Нікого не знайдено</div>`; return; }
 
   filtered.forEach(emp => {
-    const isActive = emp.status === 'Активний';
-    const initials = getInitials(emp.pib);
-    const color = getAvatarColor(emp.pib);
-    const folderBtn = emp.folderUrl
-      ? `<a href="${emp.folderUrl}" target="_blank" class="emp-doc-btn">📁 Документи</a>` : '';
+    const isActive   = emp.status === 'Активний';
+    const initials   = getInitials(emp.pib);
+    const color      = getAvatarColor(emp.pib);
+    const folderBtn  = emp.folderUrl ? `<a href="${emp.folderUrl}" target="_blank" class="emp-doc-btn">📁 Документи</a>` : '';
+    const rateFmt    = formatRate(emp.rate);
+    const rateBadge  = rateFmt ? `<span class="emp-tag rate">💰 ${rateFmt}</span>` : '';
+    const schedBadge = emp.workSchedule ? `<span class="emp-tag sched">🕐 ${emp.workSchedule}</span>` : '';
+    const tagsHtml   = (rateBadge || schedBadge) ? `<div class="emp-tags">${rateBadge}${schedBadge}</div>` : '';
 
     const row = document.createElement('div');
     row.className = 'emp-row';
@@ -550,6 +580,7 @@ function renderTable() {
       <div class="emp-info">
         <div class="emp-name">${emp.pib}</div>
         <div class="emp-sub">${emp.department} · ${emp.position}</div>
+        ${tagsHtml}
       </div>
       <span class="status-badge ${isActive ? 'badge-active' : 'badge-fired'}">${emp.status}</span>
       <button class="emp-btn" onclick="editEmployee(${emp.id})">Редагувати</button>
@@ -577,17 +608,20 @@ function autoUpdateStatus() {
 function editEmployee(id) {
   const emp = allEmployees.find(e => e.id == id);
   if (!emp) return;
-  document.getElementById('emp-id').value = emp.id;
-  document.getElementById('pib').value = emp.pib;
-  document.getElementById('department').value = emp.department;
-  document.getElementById('position').value = emp.position;
-  document.getElementById('adaptationDate').value = emp.adaptationDate;
-  document.getElementById('startDate').value = emp.startDate;
-  document.getElementById('dismissalDate').value = emp.dismissalDate;
-  document.getElementById('folderUrl').value = emp.folderUrl;
+  document.getElementById('emp-id').value            = emp.id;
+  document.getElementById('pib').value               = emp.pib;
+  document.getElementById('department').value        = emp.department;
+  document.getElementById('position').value          = emp.position;
+  document.getElementById('adaptationDate').value    = emp.adaptationDate;
+  document.getElementById('startDate').value         = emp.startDate;
+  document.getElementById('dismissalDate').value     = emp.dismissalDate;
+  document.getElementById('folderUrl').value         = emp.folderUrl;
+  document.getElementById('rate').value              = emp.rate || '';
+  document.getElementById('paymentCard').value       = emp.paymentCard || '';
+  sbSetValue(emp.workSchedule || '');
   autoUpdateStatus();
-  document.getElementById('form-title').textContent = `Редагувати #${emp.id}`;
-  document.getElementById('btn-submit').textContent = 'Оновити дані';
+  document.getElementById('form-title').textContent     = `Редагувати #${emp.id}`;
+  document.getElementById('btn-submit').textContent     = 'Оновити дані';
   document.getElementById('btn-cancel-edit').style.display = 'block';
   document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth' });
 }
@@ -600,27 +634,31 @@ function resetForm() {
   document.getElementById('form-title').textContent = 'Додати працівника';
   document.getElementById('btn-submit').textContent = 'Зберегти картку';
   document.getElementById('btn-cancel-edit').style.display = 'none';
+  sbSetValue('');
 }
 
 async function submitForm(e) {
   e.preventDefault();
   showLoading(true);
   const data = {
-    action: 'addEmployee',
-    login: localStorage.getItem('hr_user'),
-    password: localStorage.getItem('hr_pass'),
-    id: document.getElementById('emp-id').value,
-    pib: document.getElementById('pib').value,
-    department: document.getElementById('department').value,
-    position: document.getElementById('position').value,
+    action:         'addEmployee',
+    login:          localStorage.getItem('hr_user'),
+    password:       localStorage.getItem('hr_pass'),
+    id:             document.getElementById('emp-id').value,
+    pib:            document.getElementById('pib').value,
+    department:     document.getElementById('department').value,
+    position:       document.getElementById('position').value,
     adaptationDate: document.getElementById('adaptationDate').value,
-    startDate: document.getElementById('startDate').value,
-    dismissalDate: document.getElementById('dismissalDate').value,
-    status: document.getElementById('status').value,
-    folderUrl: document.getElementById('folderUrl').value
+    startDate:      document.getElementById('startDate').value,
+    dismissalDate:  document.getElementById('dismissalDate').value,
+    status:         document.getElementById('status').value,
+    folderUrl:      document.getElementById('folderUrl').value,
+    rate:           document.getElementById('rate').value,
+    paymentCard:    document.getElementById('paymentCard').value,
+    workSchedule:   document.getElementById('workSchedule').value
   };
   try {
-    const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(data) });
+    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
     const result = await res.json();
     if (result.success) {
       resetForm();
