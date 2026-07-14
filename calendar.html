@@ -226,6 +226,8 @@
 
   .event-vacation { background: var(--green-light); color: var(--green-text); border: 1px solid #bbf7d0; }
   .event-dayoff { background: var(--orange-light); color: var(--orange-text); border: 1px solid #fde68a; }
+  /* Частковий вихідний — той самий тон, але зі "смугастим" лівим краєм */
+  .event-dayoff.halfday { border-left: 3px solid var(--orange); }
 
   /* ── MODAL ── */
   .modal-overlay {
@@ -281,6 +283,10 @@
   .field select:focus, .field input:focus { border-color: var(--blue); background: var(--white); }
   
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* Блок часткового вихідного */
+  #halfday-block { display: none; }
+  #time-field { display: none; }
 
   .btn-submit {
     width: 100%; height: 44px; background: var(--blue); color: white; border: none;
@@ -366,7 +372,23 @@
         </select>
       </div>
 
-      <div class="field-row">
+      <!-- Частковий вихідний (лише для типу "Вихідний") -->
+      <div class="field-row" id="halfday-block">
+        <div class="field" style="margin-bottom: 0;">
+          <label>Тривалість</label>
+          <select id="event-time-type" onchange="toggleTimeField()">
+            <option value="">Весь день</option>
+            <option value="from">Буде з...</option>
+            <option value="until">Працює до...</option>
+          </select>
+        </div>
+        <div class="field" id="time-field" style="margin-bottom: 0;">
+          <label>Година</label>
+          <input type="time" id="event-time">
+        </div>
+      </div>
+
+      <div class="field-row" style="margin-top: 14px;">
         <div class="field">
           <label>Дата початку</label>
           <input type="date" id="event-start-date" required onchange="syncEndDate()">
@@ -464,6 +486,16 @@ function getEventsForDate(dateStr) {
   });
 }
 
+// Підпис на чіпі: для пів дня додаємо годину
+function chipLabel(evt) {
+  if (evt.type === 'dayoff' && evt.timeType && evt.time) {
+    return evt.timeType === 'from'
+      ? `${evt.employee} · з ${evt.time}`
+      : `${evt.employee} · до ${evt.time}`;
+  }
+  return evt.employee;
+}
+
 function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -497,8 +529,9 @@ function renderCalendar() {
     const dayEvents = getEventsForDate(dateString);
     let eventsHtml = '<div class="event-list">';
     dayEvents.forEach(evt => {
-      const typeClass = evt.type === 'vacation' ? 'event-vacation' : 'event-dayoff';
-      eventsHtml += `<div class="event-chip ${typeClass}" onclick="editEvent('${evt.id}', event)">${evt.employee}</div>`;
+      let typeClass = evt.type === 'vacation' ? 'event-vacation' : 'event-dayoff';
+      if (evt.type === 'dayoff' && evt.timeType) typeClass += ' halfday';
+      eventsHtml += `<div class="event-chip ${typeClass}" onclick="editEvent('${evt.id}', event)">${chipLabel(evt)}</div>`;
     });
     eventsHtml += '</div>';
 
@@ -524,11 +557,33 @@ function goToToday() {
 function toggleDateRange() {
   const type = document.getElementById('event-type').value;
   const endDateField = document.getElementById('end-date-field');
+  const halfdayBlock = document.getElementById('halfday-block');
+
   if (type === 'dayoff') {
     endDateField.style.opacity = '0.4';
+    halfdayBlock.style.display = 'grid';
     syncEndDate();
   } else {
     endDateField.style.opacity = '1';
+    halfdayBlock.style.display = 'none';
+    // Відпустка не може бути частковою — скидаємо
+    document.getElementById('event-time-type').value = '';
+    toggleTimeField();
+  }
+}
+
+function toggleTimeField() {
+  const timeType = document.getElementById('event-time-type').value;
+  const timeField = document.getElementById('time-field');
+  const timeInput = document.getElementById('event-time');
+
+  if (timeType) {
+    timeField.style.display = 'block';
+    timeInput.required = true;
+  } else {
+    timeField.style.display = 'none';
+    timeInput.required = false;
+    timeInput.value = '';
   }
 }
 
@@ -549,8 +604,10 @@ function openModal(dateStr) {
   document.getElementById('event-end-date').value = dateStr;
   document.getElementById('modal-title').textContent = 'Додати подію';
   document.getElementById('btn-delete').style.display = 'none';
-  document.getElementById('event-type').value = 'dayoff'; 
+  document.getElementById('event-type').value = 'dayoff';
+  document.getElementById('event-time-type').value = '';
   toggleDateRange();
+  toggleTimeField();
   modal.classList.add('active');
 }
 
@@ -567,8 +624,11 @@ function editEvent(id, e) {
   document.getElementById('event-end-date').value = evt.endDate;
   document.getElementById('event-type').value = evt.type;
   document.getElementById('event-employee').value = evt.employee;
+  document.getElementById('event-time-type').value = evt.timeType || '';
+  document.getElementById('event-time').value = evt.time || '';
   
   toggleDateRange();
+  toggleTimeField();
   document.getElementById('modal-title').textContent = 'Редагувати подію';
   document.getElementById('btn-delete').style.display = 'block';
   modal.classList.add('active');
@@ -583,12 +643,21 @@ async function saveEvent(e) {
   const employee = document.getElementById('event-employee').value;
   const endDate = type === 'dayoff' ? startDate : document.getElementById('event-end-date').value;
 
+  // Частковий вихідний
+  const timeType = type === 'dayoff' ? document.getElementById('event-time-type').value : '';
+  const time = timeType ? document.getElementById('event-time').value : '';
+
   if (new Date(endDate) < new Date(startDate)) {
     alert('Помилка: Дата закінчення не може бути раніше дати початку!');
     return;
   }
 
-  const newEvent = { id, startDate, endDate, type, employee };
+  if (timeType && !time) {
+    alert('Вкажіть годину для часткового вихідного!');
+    return;
+  }
+
+  const newEvent = { id, startDate, endDate, type, employee, timeType, time };
   const eventIndex = events.findIndex(x => String(x.id) === String(id));
 
   // МИТТЄВЕ ОНОВЛЕННЯ ІНТЕРФЕЙСУ
@@ -611,7 +680,9 @@ async function saveEvent(e) {
     startDate: startDate,
     endDate: endDate,
     type: type,
-    employee: employee
+    employee: employee,
+    timeType: timeType,
+    time: time
   };
 
   try {
