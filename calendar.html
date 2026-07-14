@@ -145,7 +145,8 @@
 
   .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    /* minmax(0, 1fr) — колонки завжди рівні, довгий текст не розпирає сітку */
+    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 
   .day-name {
@@ -159,6 +160,7 @@
   }
 
   .calendar-cell {
+    min-width: 0; /* дозволяє клітинці стискатись — ellipsis на чіпах працює */
     min-height: 120px;
     border-bottom: 1px solid var(--border);
     border-right: 1px solid var(--border);
